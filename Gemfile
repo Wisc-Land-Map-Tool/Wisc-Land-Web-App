@@ -6,6 +6,7 @@ gem 'rails', '4.0.3'
 gem "pg", "~> 0.17.1"
 gem 'bootstrap-sass', '~> 3.1.1'
 gem 'devise'
+gem 'bcrypt-ruby'
 
 group :development, :test do
   gem 'rspec-rails', '2.13.1'
