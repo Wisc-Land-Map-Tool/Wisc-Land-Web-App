@@ -11,6 +11,8 @@
 <% if user_signed_in? %>
 	<%= render 'layouts/header' %>
 	<%= render 'layouts/sidebar' %>
+<% else %>
+	<%= render 'layouts/logo' %>
 <% end %>
 
 <% flash.each do |name, msg| %>
