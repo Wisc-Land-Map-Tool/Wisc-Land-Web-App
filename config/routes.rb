@@ -1,8 +1,11 @@
 WiscLandWebApp::Application.routes.draw do
   devise_for :users
+  resources :users
+  
   get '/dashboard/roles' => 'dashboard#roles', :as => 'roles'
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
   get '/dashboard/tasks' => 'dashboard#tasks', :as => 'tasks'
+
   resources :dashboard
   
   root to: "login#index"
