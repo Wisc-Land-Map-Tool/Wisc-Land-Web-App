@@ -136,7 +136,7 @@
           var fieldStaffSelect = document.getElementById('FieldStaffSelect');
 
           //ajax query to get users
-          jQuery.getJSON('http://0.0.0.0:3000/users',function(fieldStaff){
+          jQuery.getJSON('http://localhost:3000/users',function(fieldStaff){
             for (var i=0;i<fieldStaff.length;i++){
               var staffOption = document.createElement("option");
               staffOption.text = fieldStaff[i].email;

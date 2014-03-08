@@ -11,6 +11,11 @@
 <% if user_signed_in? %>
 	<%= render 'layouts/header' %>
 	<%= render 'layouts/sidebar' %>
+	<div id="page-content-wrapper">
+        <!-- Keep all page content within the page-content inset div! -->
+        <div class="page-content inset">
+
+
 <% else %>
 	<%= render 'layouts/logo' %>
 <% end %>
@@ -22,5 +27,7 @@
 
 <%= yield %>
 
+		</div>
+    </div>
 </body>
 </html>
