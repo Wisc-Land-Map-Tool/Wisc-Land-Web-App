@@ -6,6 +6,11 @@ WiscLandWebApp::Application.routes.draw do
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
   get '/dashboard/tasks' => 'dashboard#tasks', :as => 'tasks'
 
+
+  namespace :api do
+    resources :users, :defaults => { :format => 'xml' }
+  end
+
   resources :dashboard
   
   root to: "login#index"
