@@ -1,15 +1,29 @@
 WiscLandWebApp::Application.routes.draw do
-  devise_for :users
-  resources :users
+  devise_for :users, :controllers => { :sessions => "mobile/sessions" }
+  
+  devise_scope :user do
+    namespace :mobile do
+        resources :sessions, :only => [:create, :destroy]
+    end
+  end
+
+  resources :users do
+    member do
+      post 'assignments'
+    end
+  end
+  
+
+  resources :assignments
   
   get '/dashboard/roles' => 'dashboard#roles', :as => 'roles'
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
   get '/dashboard/tasks' => 'dashboard#tasks', :as => 'tasks'
 
 
-  namespace :api do
-    resources :users, :defaults => { :format => 'xml' }
-  end
+  # namespace :api do
+  #   resources :users, :defaults => { :format => 'xml' }
+  # end
 
   resources :dashboard
   
