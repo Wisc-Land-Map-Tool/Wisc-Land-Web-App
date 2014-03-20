@@ -1,185 +1,130 @@
-
-      var map, tb;
-      var dataPoints=[]; //all datapoints on map
-      var assigned=[]; //currently selected points
-      var unassigned=[]; //currently not selected points
-      var polygons=[]; //polygons currently drawn on map
-
+var map, dialog;
       require([
-        "esri/map", "esri/toolbars/draw",
-        "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
-        "esri/symbols/PictureFillSymbol", "esri/symbols/CartographicLineSymbol", 
-        "esri/graphic", 
-        "dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/domReady!"
+        "esri/map", "esri/layers/FeatureLayer",
+        "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol","esri/arcgis/utils", 
+        "esri/renderers/SimpleRenderer", "esri/graphic", "esri/lang",
+        "dojo/_base/Color", "dojo/number", "dojo/dom-style", 
+        "dijit/TooltipDialog", "dijit/popup", "dojo/domReady!"
       ], function(
-        Map, Draw,
-        SimpleMarkerSymbol, SimpleLineSymbol,
-        PictureFillSymbol, CartographicLineSymbol, 
-        Graphic, 
-        Color, dom, on
+        Map, FeatureLayer,
+        SimpleFillSymbol, SimpleLineSymbol, arcgisUtils,
+        SimpleRenderer, Graphic, esriLang,
+        Color, number, domStyle, 
+        TooltipDialog, dijitPopup
       ) {
-        map = new Map("mapDiv", {
-          basemap: "streets",
-          center: [-89.5, 44.5],
-          zoom: 7
-        });
-        map.on("load", initToolbar);
-        map.on("load", initializePoints);
-
-
-        // markerSymbol is used for point and multipoint, see http://raphaeljs.com/icons/#talkq for more examples
-        var markerSymbol = new SimpleMarkerSymbol();
-        markerSymbol.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
-        markerSymbol.setColor(new Color("#00FFFF"));
-         var markerSymbolAssigned = new SimpleMarkerSymbol();
-        markerSymbolAssigned.setPath("M16,4.938c-7.732,0-14,4.701-14,10.5c0,1.981,0.741,3.833,2.016,5.414L2,25.272l5.613-1.44c2.339,1.316,5.237,2.106,8.387,2.106c7.732,0,14-4.701,14-10.5S23.732,4.938,16,4.938zM16.868,21.375h-1.969v-1.889h1.969V21.375zM16.772,18.094h-1.777l-0.176-8.083h2.113L16.772,18.094z");
-        markerSymbolAssigned.setColor(new Color("#FFFFFF"));
-
-        // lineSymbol used for freehand polyline, polyline and line. 
-        var lineSymbol = new CartographicLineSymbol(
-          CartographicLineSymbol.STYLE_SOLID,
-          new Color([255,0,0]), 10, 
-          CartographicLineSymbol.CAP_ROUND,
-          CartographicLineSymbol.JOIN_MITER, 5
+         
+  var webmapId="ebe782cf918c45a19175475bc176f08c";
+        arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
+          map = response.map;   
+ 
+        var surveySites = map.getLayer(map.graphicsLayerIds[0]);
+  console.log(surveySites.graphics)
+        var symbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, 
+          new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID, 
+            new Color([255,255,255,0.35]), 
+            1
+          ),
+          new Color([125,125,125,0.35])
         );
+        surveySites.setRenderer(new SimpleRenderer(symbol));
+        map.addLayer(surveySites);
+    
+        map.infoWindow.resize(245,125);
+        
+        dialog = new TooltipDialog({
+          id: "tooltipDialog",
+          style: "position: absolute; width: 250px; font: normal normal normal 10pt Helvetica;z-index:100"
+        });
+        dialog.startup();
 
-        // fill symbol used for extent, polygon and freehand polygon, use a picture fill symbol
-        // the images folder contains additional fill images, other options: sand.png, swamp.png or stiple.png
-        // var fillSymbol = new PictureFillSymbol(
-        //   "images/mangrove.png",
-        //   new SimpleLineSymbol(
-        //     SimpleLineSymbol.STYLE_SOLID,
-        //     new Color('#000'), 
-        //     1
-        //   ), 
-        //   42, 
-        //   42
-        // );
+        //Load tasks from server
 
-        function initToolbar() {
-          tb = new Draw(map);
-          tb.on("draw-end", addGraphic);
-          initializeFieldStaff();
+        
+            $.ajax({
+    url: "http://localhost:3000/users/1/assignments",
+    type: "POST",
+    data: JSON.stringify({user: {id: 1}}),
+    dataType: "json",
+    contentType: "application/json; charset=utf-8",
+    contentType: "application/json",
+    success: function(data){
+      for(var i=0;i<data.length;i++){
+        assigned[data[i].location_id]=1;
+      }         
+    },
+    
+    error: function(error) {
+      console.log(error.responseText)
+  }
+    
+    });
 
-          // event delegation so a click handler is not
-          // needed for each individual button
-          on(dom.byId("info"), "click", function(evt) {
-            if ( evt.target.id === "info" ) {
-              return;
-            }else if ( evt.target.id === "assign" ) {
-                assignPoints();
-                clearMap();
-                return;
-            }else if(evt.target.id === "clear"){
-                clearMap();
-                return
-            }
-            var tool = evt.target.id.toLowerCase();
-            map.disableMapNavigation();
-            tb.activate(tool);
-          });
-        }
-        function clearMap(){
-                map.graphics.clear()
-                polygons=[];
-                drawPoints();
-                unassigned=dataPoints;
-                assigned=[];
-        }
-        function assignPoints(){
-            //get user to assign to
-            var fieldStaffSelect = document.getElementById('FieldStaffSelect');
-            var options=fieldStaffSelect.options;
-            var id=options[options.selectedIndex].id;
+        var notAssignedSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
+          SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 3), 
+          new Color([125,125,125,0.35]));
 
-            //set up ajax call
-
-
-            //refresh map to change color of assigned points
-            for (var i=0;i<assigned.length;i++){
-              assigned[i][2]=1;
-              unassigned.push(assigned[i]);
-            }
-            unassigned=[]
-
-
-        }
-
-        function addGraphic(evt) {
-          //deactivate the toolbar and clear existing graphics 
-          tb.deactivate(); 
-          map.enableMapNavigation();
-          if(evt.geometry.type=="polygon"){
-            polygons.push(evt.geometry);
-            var newunassigned=[];
-            for (var i=0;i<unassigned.length;i++){
-               var check=evt.geometry.contains(new esri.geometry.Point(unassigned[i][0],unassigned[i][1]));
-              if (check){
-                assigned.push(unassigned[i]);
-              }else{
-                newunassigned.push(unassigned[i]);
-              }
-            };
-            unassigned=newunassigned;
-          }
-
-          // figure out which symbol to use
-          var symbol=fillSymbol
-          map.graphics.add(new Graphic(evt.geometry, symbol));
-
-        }
-
-
-        //Load users into potential field staff drop down (or menu if this changes)
-        function initializeFieldStaff(){
-          //get drop down menu          
-          var fieldStaffSelect = document.getElementById('FieldStaffSelect');
-
-          //ajax query to get users
-          jQuery.getJSON('http://localhost:3000/users',function(fieldStaff){
-            for (var i=0;i<fieldStaff.length;i++){
-              var staffOption = document.createElement("option");
-              staffOption.text = fieldStaff[i].email;
-              staffOption.value = fieldStaff[i].id;
-              fieldStaffSelect.appendChild(staffOption);
-            }
-          });
+        var assignedSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 3), 
+          new Color([125,125,125,0.35]));
+        
+        var completedSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID, new Color([0,255,0]), 3), 
+          new Color([125,125,125,0.35]));
+         var revisitSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID, new Color([200,200,200]), 3), 
+          new Color([125,125,125,0.35]));
+        
+  map.on("update-end",function(){
+            map.graphics.clear();
+          var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
+    for(var i=0;i<currentSurveySites.graphics.length;i++){
+      if (assigned[currentSurveySites.graphics[i].attributes.FID]==1){
+                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
+      }else if (assigned[currentSurveySites.graphics[i].attributes.FID]==2){
+                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,completedSymbol);
+      }else if (assigned[currentSurveySites.graphics[i].attributes.FID]==3){
+                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,revisitSymbol);
+      }else {
+                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
+      }
+      map.graphics.add(highlightGraphic);
+    }
+  });
+        //close the dialog when the mouse leaves the highlight graphic
+        map.on("load", function(){
+          map.graphics.enableMouseEvents();
+          map.graphics.on("mouse-out", closeDialog);
           
+        });
+                
+        //listen for when the onMouseOver event fires on the countiesGraphicsLayer
+        //when fired, create a new graphic with the geometry from the event.graphic and add it to the maps graphics layer
+        // surveySites.on("mouse-over", function(evt){
+        //   var t = "<b>${NAME}</b><hr>Description"
+  
+        //   var content = esriLang.substitute(evt.graphic.attributes,t);
+        //   var highlightGraphic = new Graphic(evt.graphic.geometry,highlightSymbol);
+        //   map.graphics.add(highlightGraphic);
+          
+        //   dialog.setContent(content);
+
+        //   domStyle.set(dialog.domNode, "opacity", 0.85);
+        //   dijitPopup.open({
+        //     popup: dialog, 
+        //     x: evt.pageX,
+        //     y: evt.pageY
+        //   });
+        // });
+    
+        function closeDialog() {
+          map.graphics.clear();
+          dijitPopup.close(dialog);
         }
-
-        function drawPoints(){
-          for (var i=0;i<dataPoints.length;i++){
-               pointAssigned=dataPoints[i][2];
-               if (pointAssigned==1){
-                map.graphics.add(new Graphic(new esri.geometry.Point(dataPoints[i][0],dataPoints[i][1]),markerSymbolAssigned));
-              }else{
-                map.graphics.add(new Graphic(new esri.geometry.Point(dataPoints[i][0],dataPoints[i][1]),markerSymbol));
-              }
-          };
-
-        }
-        //load all data points onto map
-        function initializePoints(){
-
-          dataPoints=[
-            [-89.5,44.0,0],
-            [-89.5,44.1,0],
-            [-89.5,44.2,0],
-            [-89.5,44.3,0],
-            [-89.5,44.4,0],
-            [-89.5,44.5,0],
-            [-89.0,44.0,1],
-            [-89.0,44.1,1],
-            [-89.0,44.2,1],
-            [-89.0,44.3,1],
-            [-89.0,44.4,1],
-            [-89.0,44.5,1],
-            [-89.0,44.6,1],
-            [-90.0,44.4,1],
-            [-90.0,44.5,1]               
-          ];
-          unassigned=dataPoints;
-          drawPoints();
-
-        }
+  }); 
       });

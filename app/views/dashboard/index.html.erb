@@ -45,8 +45,21 @@
   <body>
   <div class="row-fluid">
   <div class="col-md-5">
-    <h1> Left Column Test <h2>
-  </div>
+    <h1> User Summary </h1>
+    <table>
+      <tr>
+      <td width=50%>User<td />
+      <td width=50%>Number of tasks remaining<td />
+    </tr>
+    <% @users.each do |user| %>
+    <tr>
+      <td><%= user.email %><td />
+      <td><%= user.count %><td />
+    </tr>
+  <% end %>
+</table>
+
+  </div>  
   <div class="col-md-7">
     <div id="mapDiv"></div>
   </div>
