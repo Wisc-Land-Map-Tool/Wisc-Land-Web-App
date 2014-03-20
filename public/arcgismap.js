@@ -79,7 +79,7 @@ var map, dialog;
           SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
             SimpleLineSymbol.STYLE_SOLID, new Color([200,200,200]), 3), 
           new Color([125,125,125,0.35]));
-        
+
   map.on("update-end",function(){
             map.graphics.clear();
           var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
@@ -93,9 +93,24 @@ var map, dialog;
       }else {
                 var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
       }
-      map.graphics.add(highlightGraphic);
+      if (currentSurveySites.visible==true){
+        map.graphics.add(highlightGraphic);
+      }
     }
   });
+  map.on("zoom-end",function(evt){
+    console.log(evt);
+    console.log(evt.zoomFactor);
+    if (evt.zoomFactor<1){
+        console.log('less than 1')
+        map.graphics.clear();
+        surveySites.visible=false;
+    }else{
+        surveySites.visible=true;
+
+    }
+  });
+
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
           map.graphics.enableMouseEvents();
