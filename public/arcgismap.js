@@ -1,24 +1,34 @@
 var map, dialog;
-      require([
-        "esri/map", "esri/layers/FeatureLayer",
+     
+  
+    require([
+        "esri/map", "esri/toolbars/draw", "esri/layers/FeatureLayer",
         "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol","esri/arcgis/utils", 
-        "esri/renderers/SimpleRenderer", "esri/graphic", "esri/lang",
+        "esri/renderers/SimpleRenderer", "esri/symbols/PictureFillSymbol","esri/graphic", "esri/lang","esri/tasks/query",
         "dojo/_base/Color", "dojo/number", "dojo/dom-style", 
-        "dijit/TooltipDialog", "dijit/popup", "dojo/domReady!"
+        "dijit/TooltipDialog","dojo/dom","dojo/on", "dijit/popup", "dojo/domReady!"
       ], function(
-        Map, FeatureLayer,
+        Map, Draw, FeatureLayer,
         SimpleFillSymbol, SimpleLineSymbol, arcgisUtils,
-        SimpleRenderer, Graphic, esriLang,
+        SimpleRenderer,PictureFillSymbol, Graphic, esriLang,Query,
         Color, number, domStyle, 
-        TooltipDialog, dijitPopup
+        TooltipDialog, dom,on,dijitPopup
       ) {
-         
-  var webmapId="ebe782cf918c45a19175475bc176f08c";
+        
+        var webmapId="ebe782cf918c45a19175475bc176f08c";
         arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
-          map = response.map;   
- 
+        map = response.map;   
+        var tasks=[];
+
+        map.on("load", initToolbar);
+
+        var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
+        if (map.loaded){
+           console.log('Map loaded')
+           initToolbar();
+        }    
+
         var surveySites = map.getLayer(map.graphicsLayerIds[0]);
-  console.log(surveySites.graphics)
         var symbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, 
           new SimpleLineSymbol(
@@ -40,26 +50,23 @@ var map, dialog;
         dialog.startup();
 
         //Load tasks from server
-
-        
-            $.ajax({
-    url: "http://localhost:3000/users/1/assignments",
-    type: "POST",
-    data: JSON.stringify({user: {id: 1}}),
-    dataType: "json",
-    contentType: "application/json; charset=utf-8",
-    contentType: "application/json",
-    success: function(data){
-      for(var i=0;i<data.length;i++){
-        assigned[data[i].location_id]=1;
-      }         
-    },
-    
-    error: function(error) {
-      console.log(error.responseText)
-  }
-    
-    });
+        $.ajax({
+            url: "http://localhost:3000/users/1/assignments",
+            type: "POST",
+            data: JSON.stringify({user: {id: 1}}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              for(var i=0;i<data.length;i++){
+                assigned[data[i].location_id]=1;
+              }         
+            },
+            
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
 
         var notAssignedSymbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
@@ -80,39 +87,42 @@ var map, dialog;
             SimpleLineSymbol.STYLE_SOLID, new Color([200,200,200]), 3), 
           new Color([125,125,125,0.35]));
 
-  map.on("update-end",function(){
-            map.graphics.clear();
-          var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
-    for(var i=0;i<currentSurveySites.graphics.length;i++){
-      if (assigned[currentSurveySites.graphics[i].attributes.FID]==1){
-                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
-      }else if (assigned[currentSurveySites.graphics[i].attributes.FID]==2){
-                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,completedSymbol);
-      }else if (assigned[currentSurveySites.graphics[i].attributes.FID]==3){
-                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,revisitSymbol);
-      }else {
-                var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
-      }
-      if (currentSurveySites.visible==true){
-        map.graphics.add(highlightGraphic);
-      }
-    }
-  });
-  map.on("zoom-end",function(evt){
-    console.log(evt);
-    console.log(evt.zoomFactor);
-    if (evt.zoomFactor<1){
-        console.log('less than 1')
-        map.graphics.clear();
-        surveySites.visible=false;
-    }else{
-        surveySites.visible=true;
+        
+          map.on("update-end",function(){
+                    map.graphics.clear();
+                  var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
+            for(var i=0;i<currentSurveySites.graphics.length;i++){
+              if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
+                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
+              }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
+                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,completedSymbol);
+              }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==3){
+                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,revisitSymbol);
+              }else {
+                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
+              }
+              if (currentSurveySites.visible==true){
+                map.graphics.add(highlightGraphic);
+              }
+            }
+          });
+          map.on("zoom-end",function(evt){
+            console.log(evt);
+            console.log(evt.zoomFactor);
+            if (evt.zoomFactor<1){
+                console.log('less than 1')
+                map.graphics.clear();
+                surveySites.visible=false;
+            }else{
+                surveySites.visible=true;
 
-    }
-  });
+            }
+          });
+
 
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
+          console.log("On load mouse event")
           map.graphics.enableMouseEvents();
           map.graphics.on("mouse-out", closeDialog);
           
@@ -137,9 +147,105 @@ var map, dialog;
         //   });
         // });
     
+        function initToolbar() {
+          initializeFieldStaff();
+
+          tb = new Draw(map);
+          tb.on("draw-end", addGraphic);
+          console.log('Init Toolbar')
+
+          // event delegation so a click handler is not
+          // needed for each individual button
+          on(dom.byId("info"), "click", function(evt) {
+             console.log('Click')
+            if ( evt.target.id === "info" ) {
+              return;
+            }else if ( evt.target.id === "assign" ) {
+                assignTasks();
+                return;
+            }else if(evt.target.id === "clear"){
+                return
+            }
+            var tool = evt.target.id.toLowerCase();
+            map.disableMapNavigation();
+            tb.activate(tool);
+          });
+        }
+        function addGraphic(evt) {
+          //deactivate the toolbar and clear existing graphics 
+          tb.deactivate(); 
+          map.enableMapNavigation();
+          if(evt.geometry.type=="polygon"){
+              console.log('Selected Polygon')            
+          }
+
+          var query = new esri.tasks.Query();
+          query.geometry=evt.geometry
+          //query.outFields=["GTPOLYS_"]
+          surveySites.queryFeatures(query, function(results){
+            console.log(results)
+            for (var i=0;i<results.features.length;i++){
+              tasks.push(results.features[i].attributes["GTPOLYS_"])
+            }
+          })
+
+          // figure out which symbol to use
+          var symbol=fillSymbol
+          map.graphics.add(new Graphic(evt.geometry, symbol));
+
+        }
+
         function closeDialog() {
           map.graphics.clear();
           dijitPopup.close(dialog);
         }
+                //Load users into potential field staff drop down (or menu if this changes)
+        function initializeFieldStaff(){
+          //get drop down menu          
+          var fieldStaffSelect = document.getElementById('FieldStaffSelect');
+
+          //ajax query to get users
+          jQuery.getJSON('http://localhost:3000/users',function(fieldStaff){
+            for (var i=0;i<fieldStaff.length;i++){
+              var staffOption = document.createElement("option");
+              staffOption.text = fieldStaff[i].email;
+              staffOption.value = fieldStaff[i].id;
+              fieldStaffSelect.appendChild(staffOption);
+            }
+          });
+          
+        }
+        function assignTasks(){
+            console.log(tasks)
+            //get user to assign to
+            var fieldStaffSelect = document.getElementById('FieldStaffSelect');
+            var options=fieldStaffSelect.options;
+            var id=options[options.selectedIndex].value;
+
+            //set up ajax call
+            $.ajax({
+            url: "http://localhost:3000/assignments/assignTasks",
+            type: "POST",
+            data: JSON.stringify({assigner: 1,assignee: id,locationIds: tasks}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              if (data.redirect){
+                  window.location.href = data.redirect
+              }
+              console.log('Success')       
+            },
+            
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+
+
+        }
+
+
+
   }); 
       });
