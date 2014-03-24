@@ -1,5 +1,4 @@
 var map, dialog;
-     
   
     require([
         "esri/map", "esri/toolbars/draw", "esri/layers/FeatureLayer",
@@ -16,6 +15,7 @@ var map, dialog;
       ) {
         
         var webmapId="ebe782cf918c45a19175475bc176f08c";
+        var assigned = {};
         arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
         map = response.map;   
         var tasks=[];
