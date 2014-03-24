@@ -19,7 +19,7 @@ describe LoginController do
         it "if not logged in, directs user to index page" do
 
         	get 'index'
-			response.should redirect_to '/index'
+			response.should render_template(:index)
 
         end
 
