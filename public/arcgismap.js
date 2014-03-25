@@ -24,7 +24,6 @@ var map, dialog;
 
         var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
         if (map.loaded){
-           console.log('Map loaded')
            initToolbar();
         }    
 
@@ -89,9 +88,12 @@ var map, dialog;
 
         
           map.on("update-end",function(){
-                    map.graphics.clear();
-                  var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
-            for(var i=0;i<currentSurveySites.graphics.length;i++){
+          //console.log('update-end')
+          map.graphics.clear();
+          var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
+          //console.log(currentSurveySites.visible)
+
+          for(var i=0;i<currentSurveySites.graphics.length;i++){
               if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
                         var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
               }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
@@ -107,10 +109,11 @@ var map, dialog;
             }
           });
           map.on("zoom-end",function(evt){
-            console.log(evt);
-            console.log(evt.zoomFactor);
-            if (evt.zoomFactor<1){
-                console.log('less than 1')
+
+            //if (evt.zoomFactor<1){
+            //  console.log(evt.zoomFactor)
+            //  console.log(map.getScale())
+            if ( (evt.zoomFactor<1) && (map.getScale()>1000000) ){
                 map.graphics.clear();
                 surveySites.visible=false;
             }else{
@@ -122,7 +125,6 @@ var map, dialog;
 
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
-          console.log("On load mouse event")
           map.graphics.enableMouseEvents();
           map.graphics.on("mouse-out", closeDialog);
           
@@ -152,12 +154,10 @@ var map, dialog;
 
           tb = new Draw(map);
           tb.on("draw-end", addGraphic);
-          console.log('Init Toolbar')
 
           // event delegation so a click handler is not
           // needed for each individual button
           on(dom.byId("info"), "click", function(evt) {
-             console.log('Click')
             if ( evt.target.id === "info" ) {
               return;
             }else if ( evt.target.id === "assign" ) {
@@ -175,15 +175,11 @@ var map, dialog;
           //deactivate the toolbar and clear existing graphics 
           tb.deactivate(); 
           map.enableMapNavigation();
-          if(evt.geometry.type=="polygon"){
-              console.log('Selected Polygon')            
-          }
 
           var query = new esri.tasks.Query();
           query.geometry=evt.geometry
           //query.outFields=["GTPOLYS_"]
           surveySites.queryFeatures(query, function(results){
-            console.log(results)
             for (var i=0;i<results.features.length;i++){
               tasks.push(results.features[i].attributes["GTPOLYS_"])
             }
@@ -216,7 +212,6 @@ var map, dialog;
           
         }
         function assignTasks(){
-            console.log(tasks)
             //get user to assign to
             var fieldStaffSelect = document.getElementById('FieldStaffSelect');
             var options=fieldStaffSelect.options;
@@ -234,7 +229,7 @@ var map, dialog;
               if (data.redirect){
                   window.location.href = data.redirect
               }
-              console.log('Success')       
+
             },
             
             error: function(error) {
