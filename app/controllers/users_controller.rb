@@ -8,7 +8,6 @@ def destroy
 end
 
 def index
-    # respond_with(@users = User.all)
     render :json => (@users = User.all)
 end
 
@@ -17,8 +16,6 @@ def assignments
 
 	@assignments = @user.assignments
 	render :json => @assignments.to_json
-
-	# respond_with(@user.assignments)
 end
 
 end

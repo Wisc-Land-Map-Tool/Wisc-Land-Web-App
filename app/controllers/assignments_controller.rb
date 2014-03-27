@@ -12,6 +12,5 @@ class AssignmentsController < ApplicationController
 		end
 
 		render :json => {success: 'true', redirect: 'http://localhost:3000/' }
-		#redirect_to :controller=>'dashboard', :action=> 'index'
 	end
 end
