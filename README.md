@@ -1,6 +1,9 @@
 # Wisconsin Land Cover Mapping Field Validation Tool dashboard application
 
-This is the application to be used by the Wisconsin DNR to assign site tasks to field staff to survey.
+The Wisconsin State Cartographer's office at the University of Wisconsin-Madison is leading a statewide land cover mapping project beginning in the spring of 2014. The land cover project will utilize satellite imagery from 2012-2014 to map the distribution of 30+ broad land cover classes found in the state.  Examples include deciduous forests, evergreen forests, wetlands, barren lands, shrubland, urban, agriculture, and so on.
+To assess the accuracy of the mapping, field agents must physically visit several thousand field sites scattered across the state. The Wisconsin Land Cover Mapping Field Validation Tool will be a device agnostic application that will display on an interactive map the locations that field staff are assigned to validate. There will be two major components to our project, a web application and a mobile application.  This repository holds the initial version of the web application. This application will be used in an office setting to manage assignments and view collected data. Based on the assignments, staff will travel to locations and collect data using the mobile application. The mobile application can be found at:
+
+https://github.com/Wisc-Land-Map-Tool/Wisc-Land-Mobile-App
 
 # Set up for local use
 
@@ -17,6 +20,7 @@ git clone https://github.com/Wisc-Land-Map-Tool/Wisc-Land-Web-App
 Navigate into directory and ensure the gems are installed and up to date using bundle install:
 
 bundle install
+
 bundle update
 
 Run the local server using the command:
