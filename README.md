@@ -49,4 +49,21 @@ http://safe-headland-3339.herokuapp.com/
 
 To use the application, sign up for an account to enter the dashboard and utilize its current functionality
 
+# Using the map
+
+The map is currently only partially featured as we fix a few bugs.  To view polygons, zoom in by double clicking on Wisconsin.  Polygons will show up once you get to the county level.  You can assign polygons to a user, click "Draw Region", then click points to construct a polygon around one or more sites to be surveyed.  Double-click to end drawing.  Then you can select a user on in the drop down menu in the top right and click assign points to create new tasks for them.  The page should reload and the Number of Tasks Remaining for that user should be incremented.
+
+A Polygon on the map corresponds to a survey site.
+
+
+The color code is as follows:
+
+Red - Unassigned
+
+Yellow - Assigned
+
+Green - Completed
+
+Grey - Revisit Needed
+
 
