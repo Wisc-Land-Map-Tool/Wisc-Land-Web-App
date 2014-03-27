@@ -7,4 +7,9 @@ class User < ActiveRecord::Base
 
   has_many :assignments
 
+  protected
+  	def confirmation_required?
+  		false
+  	end
+
 end
