@@ -20,6 +20,8 @@ var map, dialog;
         map = response.map;   
         var tasks=[];
 
+
+
         map.on("load", initToolbar);
 
         var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
@@ -51,13 +53,14 @@ var map, dialog;
 
         //Load tasks from server
         $.ajax({
-            url: "http://localhost:3000/users/1/assignments",
+            url: "http://localhost:3000/assignments",
             type: "POST",
             data: JSON.stringify({user: {id: 1}}),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
             success: function(data){
+              console.log(data)
               for(var i=0;i<data.length;i++){
                 assigned[data[i].location_id]=1;
               }         
@@ -174,6 +177,13 @@ var map, dialog;
           });
           
         }
+
+        dojo.connect(surveySites, "onClick", function(evt) {
+            var graphicAttributes = evt.graphic.attributes;
+            map.infoWindow.setTitle("title");
+            map.infoWindow.setContent("content");
+            map.infoWindow.show(evt.screenPoint,map.getInfoWindowAnchor(evt.screenPoint));
+        });
 
         //This clears all graphics and polygons on map and redraws
         function clear(){ 

@@ -14,7 +14,6 @@ WiscLandWebApp::Application.routes.draw do
   end
   
 
-  resources :assignments
   
   get '/dashboard/roles' => 'dashboard#roles', :as => 'roles'
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
@@ -22,6 +21,10 @@ WiscLandWebApp::Application.routes.draw do
 
   #no validation ATM
   post '/assignments/assignTasks' => 'assignments#assignTasks'
+  post '/assignments' => 'assignments#index'
+
+  resources :assignments
+
 
   # namespace :api do
   #   resources :users, :defaults => { :format => 'xml' }
