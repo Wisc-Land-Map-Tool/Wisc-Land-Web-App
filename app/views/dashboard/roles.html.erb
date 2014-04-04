@@ -1,12 +1,82 @@
-<h1>All Users</h1>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h1 align="center">Manage Users</h1></div>
 
-<ul class="users">
-  <% @users.each do |user| %>
-    <li>
-      <%= user.email %>
-      <%= link_to "delete", user_path(id:user.id), method: :delete,
+  <!-- Table -->
+  <table class="table table-hover">
+    <tr>
+      <th>Email</th>
+      <th>Delete User</th>
+      <th>Manage Roles</th>
+    </tr>
+
+    <% @users.each do |user| %>
+    <tr>
+      <td>
+        <%= user.email %>
+      </td>
+      <td>
+      	<%= link_to "Delete User", user_path(id:user.id), method: :delete,
                                   data: { confirm: "You sure?" } %>
+      </td>
+      <td>
+      	<button type="button" data-toggle="modal" 
+      	data-target="#ManageRoles" data-id=<%= user.has_role? :admin %> class="open-EditRoleDialog btn btn-default">
+	    Manage Roles
+	    </button>
+      </td>
+    </tr>
+    <% end %>
 
-    </li>
-  <% end %>
-</ul>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ManageRoles" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Edit User Roles</h4>
+      </div>
+      <div class="modal-body">
+        <input type="text" name="userId" id="userId" value=""/>
+        <h1 align="center">User Roles</h1>
+        <div class="row">
+          <div class="col-md-1"><input type="checkbox"><br>
+          </div>
+          <div class="col-md-11"><h3> Admin </h3></div>
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">
+            <input type="checkbox"><br></span>
+          <h3> Admin </h3>
+        </div>
+
+
+        <div class="input-group">
+      <span class="input-group-addon">
+        <input type="checkbox">
+      </span>
+      <span class="label label-default">New</span>
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

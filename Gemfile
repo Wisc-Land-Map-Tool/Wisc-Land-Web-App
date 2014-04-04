@@ -10,6 +10,7 @@ gem 'bcrypt-ruby'
 gem "cancan"
 gem 'rolify'
 gem 'sprockets', '2.11.0'
+gem 'simplecov', :require=> false, :group => :test
 
 group :development, :test do
   gem 'rspec-rails', '2.13.1'
