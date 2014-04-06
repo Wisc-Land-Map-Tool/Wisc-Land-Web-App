@@ -6,6 +6,24 @@ body {
   padding-bottom: 20px;
 }
 
+#info {
+  color: #444;
+  height: auto;
+  font-family: arial;
+  right: 20px;
+  margin: 5px;
+  padding: 10px;
+  position: absolute;
+  width: 115px;
+  z-index: 40;
+  border: solid 2px #666;
+  border-radius: 4px;
+  background-color: #fff;
+}
+button {
+  display: block;
+}
+
 .navbar{
   height:10px;
 }

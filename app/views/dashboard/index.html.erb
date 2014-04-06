@@ -1,44 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
-      on iOS devices-->
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Shapes and Symbols</title>
-
-    <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
-
-    <style>
-      #info {
-        color: #444;
-        height: auto;
-        font-family: arial;
-        right: 20px;
-        margin: 5px;
-        padding: 10px;
-        position: absolute;
-        width: 115px;
-        z-index: 40;
-        border: solid 2px #666;
-        border-radius: 4px;
-        background-color: #fff;
-      }
-      button {
-        display: block;
-      }
-    </style>
-
-    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="http://js.arcgis.com/3.8/"></script>
-
-    <script src="arcgismap.js">
-    </script>
-      
-  </head>
-  
-  <body>
+    <!-- <script src="arcgismap.js"></script> -->
     <div class="row-fluid">
       <div class="col-md-5">
         <h1> User Summary </h1>
@@ -56,17 +16,5 @@
         </table>
       </div>  
       <div class="col-md-7">
-        Zoom in to see survey sites.
-        <div id="mapDiv"></div>
-      </div>
+      <%= render 'layouts/map' %>
     </div>
-    <div id="info">
-      <div>Tools</div>
-      <button id="Polygon">Draw Region</button>
-      <select id="FieldStaffSelect">
-      </select>
-      <button id="assign">Assign Tasks</button>
-      <button id="clear">Clear</button>
-    </div>
-  </body>
-</html>
