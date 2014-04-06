@@ -25,7 +25,6 @@ WiscLandWebApp::Application.routes.draw do
 
   resources :assignments
 
-
   # namespace :api do
   #   resources :users, :defaults => { :format => 'xml' }
   # end
