@@ -18,10 +18,13 @@ WiscLandWebApp::Application.routes.draw do
   get '/dashboard/roles' => 'dashboard#roles', :as => 'roles'
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
   get '/dashboard/tasks' => 'dashboard#tasks', :as => 'tasks'
+  # post '/get_roles' => 'dashboard#roleCheck', :as => 'check_roles'
 
   #no validation ATM
   post '/assignments/assignTasks' => 'assignments#assignTasks'
   post '/assignments' => 'assignments#index'
+  post '/dashboard/roleCheck' => 'dashboard#roleCheck'
+  post '/dashboard/roleAdd' => 'dashboard#addRole'
 
   resources :assignments
 
@@ -30,7 +33,12 @@ WiscLandWebApp::Application.routes.draw do
   #   resources :users, :defaults => { :format => 'xml' }
   # end
 
-  resources :dashboard
+  resources :dashboard do
+    collection do
+      post 'roleCheck'
+      post 'roleAdd'
+    end
+  end
   
   root to: "login#index"
 

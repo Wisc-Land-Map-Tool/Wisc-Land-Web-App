@@ -17,11 +17,11 @@
       </td>
       <td>
       	<%= link_to "Delete User", user_path(id:user.id), method: :delete,
-                                  data: { confirm: "You sure?" } %>
+                                  data: { confirm: "Are you sure?" } %>
       </td>
       <td>
       	<button type="button" data-toggle="modal" 
-      	data-target="#ManageRoles" data-id=<%= user.has_role? :admin %> class="open-EditRoleDialog btn btn-default">
+      	data-target="#ManageRoles" data-id=<%= user.id %> class="open-EditRoleDialog btn btn-default">
 	    Manage Roles
 	    </button>
       </td>
@@ -39,43 +39,25 @@
         <h4 class="modal-title" id="myModalLabel">Edit User Roles</h4>
       </div>
       <div class="modal-body">
-        <input type="text" name="userId" id="userId" value=""/>
         <h1 align="center">User Roles</h1>
         <div class="row">
-          <div class="col-md-1"><input type="checkbox"><br>
+          <div class="col-md-4">
+            <h3> Admin </h3>
+            <input id="chkAdmin" type="checkbox"></input>
           </div>
-          <div class="col-md-11"><h3> Admin </h3></div>
+          <div class="col-md-4">
+            <h3> Field Manager </h3>
+            <input id="chkManager" type="checkbox"></input>
+          </div>
+          <div class="col-md-4">
+            <h3> Field Staff </h3>
+            <input id="chkStaff" type="checkbox"></input>
+          </div>
         </div>
-        <div class="input-group">
-          <span class="input-group-addon">
-            <input type="checkbox"><br></span>
-          <h3> Admin </h3>
-        </div>
-
-
-        <div class="input-group">
-      <span class="input-group-addon">
-        <input type="checkbox">
-      </span>
-      <span class="label label-default">New</span>
-    </div><!-- /input-group -->
-  </div><!-- /.col-lg-6 -->
-
-
-
-
-
-
-
-
-
-
-
-
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button id= "saveRoles" type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
