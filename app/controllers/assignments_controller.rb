@@ -9,10 +9,12 @@ class AssignmentsController < ApplicationController
 	def assignTasks
 		assigner=params[:assigner]
 		assignee=params[:assignee]
-		locationIds=params[:locationIds]
-		locationIds.each do |id|
-			ass= Assignment.find_or_initialize_by(location_id: id)
-			ass.update(UserIdAssigner: assigner,user_id: assignee,location_id: id,Status: 1)
+		locations=params[:locations]
+		logger.debug locations
+		locations.each do |loc|
+			logger.debug loc
+			ass= Assignment.find_or_initialize_by(location_id: loc[:id])
+			ass.update(UserIdAssigner: assigner,user_id: assignee,location_id: loc[:id],Status: 1,long:loc[:long],lat:loc[:lat])
 		end
 		render :json => {success: 'true', redirect: 'http://localhost:3000/' }
 	end

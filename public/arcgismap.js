@@ -1,13 +1,13 @@
 var map, dialog;
   
     require([
-        "esri/map", "esri/toolbars/draw", "esri/layers/FeatureLayer",
+        "esri/map", "esri/toolbars/draw", "esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol","esri/arcgis/utils", 
         "esri/renderers/SimpleRenderer", "esri/symbols/PictureFillSymbol","esri/graphic", "esri/lang","esri/tasks/query",
         "dojo/_base/Color", "dojo/number", "dojo/dom-style", "esri/InfoTemplate",
         "dijit/TooltipDialog","dojo/dom","dojo/on", "dijit/popup", "dojo/domReady!"
       ], function(
-        Map, Draw, FeatureLayer,
+        Map, Draw, FeatureLayer,SimpleMarkerSymbol,
         SimpleFillSymbol, SimpleLineSymbol, arcgisUtils,
         SimpleRenderer,PictureFillSymbol, Graphic, esriLang,Query,
         Color, number, domStyle, InfoTemplate,
@@ -16,6 +16,9 @@ var map, dialog;
         
         var webmapId="ebe782cf918c45a19175475bc176f08c";
         var assigned = {};
+        var assignedLong = {};
+        var assignedLat = {};
+        var userAssigned = {};
         arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
         map = response.map;   
         var tasks=[];
@@ -30,15 +33,6 @@ var map, dialog;
         }    
 
         var surveySites = map.getLayer(map.graphicsLayerIds[0]);
-        var symbol = new SimpleFillSymbol(
-          SimpleFillSymbol.STYLE_SOLID, 
-          new SimpleLineSymbol(
-            SimpleLineSymbol.STYLE_SOLID, 
-            new Color([255,255,255,0.35]), 
-            1
-          ),
-          new Color([125,125,125,0.35])
-        );
         surveySites.setRenderer(new SimpleRenderer(symbol));
         map.addLayer(surveySites);
     
@@ -60,7 +54,6 @@ var map, dialog;
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
             success: function(data){
-              console.log(data)
               for(var i=0;i<data.length;i++){
                 assigned[data[i].location_id]=1;
               }         
@@ -70,6 +63,42 @@ var map, dialog;
               console.log(error.responseText)
           }
         });
+
+        //Load tasks from server
+        $.ajax({
+            url: "http://localhost:3000/users/1/assignments",
+            type: "POST",
+            data: JSON.stringify({user: {id: 1}}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              for(var i=0;i<data.length;i++){
+                userAssigned[data[i].location_id]=1;
+                assignedLong[data[i].location_id]=data[i].long;
+                assignedLat[data[i].location_id]=data[i].lat;
+              }         
+            },
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+
+
+        //Set up symbols   
+        var symbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, 
+          new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID, 
+            new Color([255,255,255,0.35]), 
+            1
+          ),
+          new Color([125,125,125,0.35])
+        );
+        var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 10,
+             new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+             new Color([255,0,0]), 1),
+             new Color([0,255,0,0.25]));
 
         var notAssignedSymbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
@@ -91,6 +120,7 @@ var map, dialog;
           new Color([125,125,125,0.35]));
 
         
+          //Event handlers
           map.on("update-end",function(){
               clear()
           });
@@ -114,6 +144,7 @@ var map, dialog;
         });
                 
     
+        //common functions
         function initToolbar() {
           initializeFieldStaff();
 
@@ -147,7 +178,7 @@ var map, dialog;
           //query.outFields=["GTPOLYS_"]
           surveySites.queryFeatures(query, function(results){
             for (var i=0;i<results.features.length;i++){
-              tasks.push(results.features[i].attributes["GTPOLYS_"])
+              tasks.push({id: results.features[i].attributes["GTPOLYS_"], long: results.features[i]._extent.getCenter().getLongitude(), lat: results.features[i]._extent.getCenter().getLatitude()})
             }
           })
 
@@ -189,10 +220,34 @@ var map, dialog;
         function clear(){ 
             map.graphics.clear();
             tasks=[]
-            
+            drawAll();
+        }
+
+        //Markers are for sites assigned to the user currently selected
+        function drawMarkers(){
+          var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
+
+          for(var key in userAssigned){
+              //Show marker if assigned to user
+              var point = new esri.geometry.Point(assignedLong[key], assignedLat[key]);
+              if (userAssigned[key]==1){
+                    var markerGraphic = new Graphic(point,marker)
+                    map.graphics.add(markerGraphic);
+              }else if (userAssigned[key]==2){
+                    var markerGraphic = new Graphic(point,marker)
+                    map.graphics.add(markerGraphic);
+              }
+          }
+        }
+
+
+        function drawAll(){
+
             var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
 
             for(var i=0;i<currentSurveySites.graphics.length;i++){
+
+              //Color Polygons based on assignment to anyone
               if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
                         var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
               }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
@@ -202,24 +257,36 @@ var map, dialog;
               }else {
                         var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
               }
+
               if (currentSurveySites.visible==true){
                 map.graphics.add(highlightGraphic);
               }
+
+              // //Show marker if assigned to user
+              // if (userAssigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
+              //       var markerGraphic = new Graphic(currentSurveySites.graphics[i].geometry,marker)
+              //       map.graphics.add(markerGraphic);
+              // }else if (userAssigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
+              //       var markerGraphic = new Graphic(currentSurveySites.graphics[i].geometry,marker)
+              //       map.graphics.add(markerGraphic);
+              // }
+
             }
+            drawMarkers();
 
         }
+
 
         function assignTasks(){
             //get user to assign to
             var fieldStaffSelect = document.getElementById('FieldStaffSelect');
             var options=fieldStaffSelect.options;
             var id=options[options.selectedIndex].value;
-
             //set up ajax call
             $.ajax({
             url: "http://localhost:3000/assignments/assignTasks",
             type: "POST",
-            data: JSON.stringify({assigner: 1,assignee: id,locationIds: tasks}),
+            data: JSON.stringify({assigner: 1,assignee: id,locations: tasks}),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
