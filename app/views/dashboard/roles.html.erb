@@ -1,12 +1,64 @@
-<h1>All Users</h1>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><h1 align="center">Manage Users</h1></div>
 
-<ul class="users">
-  <% @users.each do |user| %>
-    <li>
-      <%= user.email %>
-      <%= link_to "delete", user_path(id:user.id), method: :delete,
-                                  data: { confirm: "You sure?" } %>
+  <!-- Table -->
+  <table class="table table-hover">
+    <tr>
+      <th>Email</th>
+      <th>Delete User</th>
+      <th>Manage Roles</th>
+    </tr>
 
-    </li>
-  <% end %>
-</ul>
+    <% @users.each do |user| %>
+    <tr>
+      <td>
+        <%= user.email %>
+      </td>
+      <td>
+      	<%= link_to "Delete User", user_path(id:user.id), method: :delete,
+                                  data: { confirm: "Are you sure?" } %>
+      </td>
+      <td>
+      	<button type="button" data-toggle="modal" 
+      	data-target="#ManageRoles" data-id=<%= user.id %> class="open-EditRoleDialog btn btn-default">
+	    Manage Roles
+	    </button>
+      </td>
+    </tr>
+    <% end %>
+
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ManageRoles" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Edit User Roles</h4>
+      </div>
+      <div class="modal-body">
+        <h1 align="center">User Roles</h1>
+        <div class="row">
+          <div class="col-md-4">
+            <h3> Admin </h3>
+            <input id="chkAdmin" type="checkbox"></input>
+          </div>
+          <div class="col-md-4">
+            <h3> Field Manager </h3>
+            <input id="chkManager" type="checkbox"></input>
+          </div>
+          <div class="col-md-4">
+            <h3> Field Staff </h3>
+            <input id="chkStaff" type="checkbox"></input>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id= "saveRoles" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
