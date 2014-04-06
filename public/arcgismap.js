@@ -13,29 +13,30 @@ var map, dialog;
         Color, number, domStyle, InfoTemplate,
         TooltipDialog, dom,on,dijitPopup
       ) {
-        
+        //ArcGIS Online Map
         var webmapId="ebe782cf918c45a19175475bc176f08c";
-        var assigned = {};
-        var assignedLong = {};
+
+
+
+        var selectedUser = 1;  //User to display assignments for
+        var assignedLong = {};  //Hash of assignments for selected User
         var assignedLat = {};
         var userAssigned = {};
+
+        var user=1;           //Logged in user for Assigner ID
+        var assigned = {};    //All assignments
+
         arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
         map = response.map;   
+
+        //Tasks to assign
         var tasks=[];
 
-
-
-        map.on("load", initToolbar);
-
-        var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
-        if (map.loaded){
-           initToolbar();
-        }    
+  
 
         var surveySites = map.getLayer(map.graphicsLayerIds[0]);
         surveySites.setRenderer(new SimpleRenderer(symbol));
         map.addLayer(surveySites);
-    
         map.infoWindow.resize(245,125);
         
 
@@ -66,9 +67,9 @@ var map, dialog;
 
         //Load tasks from server
         $.ajax({
-            url: "http://localhost:3000/users/1/assignments",
+            url: "http://localhost:3000/users/"+selectedUser+"/assignments",
             type: "POST",
-            data: JSON.stringify({user: {id: 1}}),
+            data: JSON.stringify({user: {id: selectedUser}}),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
@@ -85,7 +86,14 @@ var map, dialog;
         });
 
 
+
         //Set up symbols   
+        var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
+        if (map.loaded){
+           initToolbar();
+        }  
+
+
         var symbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, 
           new SimpleLineSymbol(
@@ -95,10 +103,10 @@ var map, dialog;
           ),
           new Color([125,125,125,0.35])
         );
-        var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 10,
+        var marker = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
              new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
              new Color([255,0,0]), 1),
-             new Color([0,255,0,0.25]));
+             new Color([0,255,0,0]));
 
         var notAssignedSymbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
@@ -121,6 +129,8 @@ var map, dialog;
 
         
           //Event handlers
+          map.on("load", initToolbar);
+
           map.on("update-end",function(){
               clear()
           });
@@ -281,12 +291,12 @@ var map, dialog;
             //get user to assign to
             var fieldStaffSelect = document.getElementById('FieldStaffSelect');
             var options=fieldStaffSelect.options;
-            var id=options[options.selectedIndex].value;
+            var assigneeId=options[options.selectedIndex].value;
             //set up ajax call
             $.ajax({
             url: "http://localhost:3000/assignments/assignTasks",
             type: "POST",
-            data: JSON.stringify({assigner: 1,assignee: id,locations: tasks}),
+            data: JSON.stringify({assigner: user,assignee: assigneeId,locations: tasks}),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
