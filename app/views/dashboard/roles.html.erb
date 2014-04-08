@@ -8,6 +8,7 @@
       <th>Email</th>
       <th>Delete User</th>
       <th>Manage Roles</th>
+      <th>User approved?</th>
     </tr>
 
     <% @users.each do |user| %>
@@ -24,6 +25,14 @@
       	data-target="#ManageRoles" data-id=<%= user.id %> class="open-EditRoleDialog btn btn-default">
 	    Manage Roles
 	    </button>
+      </td>
+      <td>
+        <%= user.approved %>
+      </td>
+      <td>
+        <button type="button" class="btn btn-default" id="btnApproveUser" data-id=<%= user.id %> >
+          Approve User
+      </button>
       </td>
     </tr>
     <% end %>

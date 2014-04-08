@@ -1,3 +1,5 @@
+
+
 $(function() {
   var id;
   id = 0;
@@ -39,6 +41,28 @@ $(function() {
       }
     });
   });
+  
+
+  $(document).on("click", "#btnApproveUser", function() {
+    var userId;
+    userId = $(this).data("id");
+
+    $.ajax({
+    type: "POST",
+    dataType: "json",
+    data: {
+      id: userId
+    },
+    url: "http://localhost:3000/users/approve",
+
+    success: function(data) {
+      // console.log(data);
+    }
+  });
+
+  });
+
+
 
   return $(document).on("click", "#saveRoles", function() {
     var checkedValueAdmin, checkedValueManager, checkedValueStaff;
