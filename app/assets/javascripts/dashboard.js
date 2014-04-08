@@ -57,8 +57,10 @@ $(function() {
       url: "http://localhost:3000/dashboard/roleAdd",
       success: function(data) {
         console.log(data);
+        $('#ManageRoles').modal('hide');
       }
     });
+
   });
 });
 
