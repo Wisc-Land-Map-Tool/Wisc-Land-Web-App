@@ -5,6 +5,8 @@
   <!-- Table -->
   <table class="table table-hover">
     <tr>
+      <th>Last Name</th>
+      <th>First Name</th>
       <th>Email</th>
       <th>Delete User</th>
       <th>Manage Roles</th>
@@ -13,6 +15,12 @@
 
     <% @users.each do |user| %>
     <tr>
+      <td>
+        <%= user.last_name %>
+      </td>
+      <td>
+        <%= user.first_name %>
+      </td>
       <td>
         <%= user.email %>
       </td>
