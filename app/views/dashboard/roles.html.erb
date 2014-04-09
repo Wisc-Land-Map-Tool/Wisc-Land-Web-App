@@ -5,13 +5,22 @@
   <!-- Table -->
   <table class="table table-hover">
     <tr>
+      <th>Last Name</th>
+      <th>First Name</th>
       <th>Email</th>
       <th>Delete User</th>
       <th>Manage Roles</th>
+      <th>User approved?</th>
     </tr>
 
     <% @users.each do |user| %>
     <tr>
+      <td>
+        <%= user.last_name %>
+      </td>
+      <td>
+        <%= user.first_name %>
+      </td>
       <td>
         <%= user.email %>
       </td>
@@ -24,6 +33,14 @@
       	data-target="#ManageRoles" data-id=<%= user.id %> class="open-EditRoleDialog btn btn-default">
 	    Manage Roles
 	    </button>
+      </td>
+      <td>
+        <%= user.approved %>
+      </td>
+      <td>
+        <button type="button" class="btn btn-default" id="btnApproveUser" data-id=<%= user.id %> >
+          Approve User
+      </button>
       </td>
     </tr>
     <% end %>

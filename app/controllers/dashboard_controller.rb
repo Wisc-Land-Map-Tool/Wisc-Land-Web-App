@@ -14,6 +14,11 @@ end
 
 def roles
 	@users = User.all
+	# if params[:approved] == "false"
+ #      @users = User.find_all_by_approved(false)
+ #    else
+ #      @users = User.all
+ #    end
 end
 
 def roleCheck

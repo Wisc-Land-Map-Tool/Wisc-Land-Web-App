@@ -12,6 +12,13 @@ WiscLandWebApp::Application.routes.draw do
       post 'assignments'
     end
   end
+
+  resources :users do
+    collection do
+      post 'approve'
+    end
+  end
+  
   
 
   
