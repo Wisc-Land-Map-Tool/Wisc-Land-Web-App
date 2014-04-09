@@ -71,13 +71,13 @@ var map, dialog;
         "esri/map", "esri/toolbars/draw", "esri/layers/FeatureLayer","esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol","esri/arcgis/utils", 
         "esri/renderers/SimpleRenderer", "esri/symbols/PictureFillSymbol","esri/graphic", "esri/lang","esri/tasks/query",
-        "dojo/_base/Color", "dojo/number", "dojo/dom-style", "esri/InfoTemplate",
+        "dojo/_base/Color", "dojo/number", "dojo/dom-style", "esri/InfoTemplate","dojo/query",
         "dijit/TooltipDialog","dojo/dom","dojo/on", "dijit/popup", "dojo/domReady!"
       ], function(
         Map, Draw, FeatureLayer,SimpleMarkerSymbol,
         SimpleFillSymbol, SimpleLineSymbol, arcgisUtils,
         SimpleRenderer,PictureFillSymbol, Graphic, esriLang,Query,
-        Color, number, domStyle, InfoTemplate,
+        Color, number, domStyle, InfoTemplate,query,
         TooltipDialog, dom,on,dijitPopup
       ) {
         //ArcGIS Online Map
@@ -85,7 +85,7 @@ var map, dialog;
 
 
 
-        var selectedUser = 1;  //User to display assignments for
+        var selectedUser;  //User to display assignments for
         var assignedLong = {};  //Hash of assignments for selected User
         var assignedLat = {};
         var userAssigned = {};
@@ -98,7 +98,7 @@ var map, dialog;
 
         //Tasks to assign
         var tasks=[];
-
+        var polygons=[];
   
 
         var surveySites = map.getLayer(map.graphicsLayerIds[0]);
@@ -131,28 +131,6 @@ var map, dialog;
               console.log(error.responseText)
           }
         });
-
-        //Load tasks from server
-        $.ajax({
-            url: "http://localhost:3000/users/"+selectedUser+"/assignments",
-            type: "POST",
-            data: JSON.stringify({user: {id: selectedUser}}),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            contentType: "application/json",
-            success: function(data){
-              for(var i=0;i<data.length;i++){
-                userAssigned[data[i].location_id]=1;
-                assignedLong[data[i].location_id]=data[i].long;
-                assignedLat[data[i].location_id]=data[i].lat;
-              }         
-            },
-            error: function(error) {
-              console.log(error.responseText)
-          }
-        });
-
-
 
         //Set up symbols   
         var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
@@ -199,7 +177,7 @@ var map, dialog;
           map.on("load", initToolbar);
 
           map.on("update-end",function(){
-              clear()
+              redraw()
           });
 
           map.on("zoom-end",function(evt){
@@ -219,9 +197,18 @@ var map, dialog;
           map.graphics.on("mouse-out", closeDialog);
           
         });
-                
-    
+        
+        query(".btn").on("click", function(evt) {
+          if(!evt.toElement.attributes["data-id"])return;
+          selectedUser=evt.toElement.attributes["data-id"].nodeValue;
+          loadSelectedUserAssignments();
+
+        });
+
+
+
         //common functions
+
         function initToolbar() {
           initializeFieldStaff();
 
@@ -234,10 +221,16 @@ var map, dialog;
             if ( evt.target.id === "info" ) {
               return;
             }else if ( evt.target.id === "assign" ) {
-                assignTasks();
+                if(selectedUser){
+                    assignTasks();
+                }else{
+                    alert("Must select a user!")
+                }
                 return;
             }else if(evt.target.id === "clear"){
-                clear()
+                tasks=[];
+                polygons=[];
+                redraw()
                 return
             }
             var tool = evt.target.id.toLowerCase();
@@ -261,7 +254,9 @@ var map, dialog;
 
           // figure out which symbol to use
           var symbol=fillSymbol
-          map.graphics.add(new Graphic(evt.geometry, symbol));
+          var gfx=new Graphic(evt.geometry, symbol);
+          polygons.push(gfx)
+          map.graphics.add(gfx);
 
         }
 
@@ -274,17 +269,17 @@ var map, dialog;
           //get drop down menu          
           var fieldStaffSelect = document.getElementById('FieldStaffSelect');
 
-          //ajax query to get users
-          jQuery.getJSON('http://localhost:3000/users',function(fieldStaff){
-            for (var i=0;i<fieldStaff.length;i++){
-              var staffOption = document.createElement("option");
-              staffOption.text = fieldStaff[i].email;
-              staffOption.value = fieldStaff[i].id;
-              fieldStaffSelect.appendChild(staffOption);
-            }
-          });
+        //   //ajax query to get users
+        //   jQuery.getJSON('http://localhost:3000/users',function(fieldStaff){
+        //     for (var i=0;i<fieldStaff.length;i++){
+        //       var staffOption = document.createElement("option");
+        //       staffOption.text = fieldStaff[i].email;
+        //       staffOption.value = fieldStaff[i].id;
+        //       fieldStaffSelect.appendChild(staffOption);
+        //     }
+        //   });
           
-        }
+         }
 
         dojo.connect(surveySites, "onClick", function(evt) {
             var graphicAttributes = evt.graphic.attributes;
@@ -294,15 +289,13 @@ var map, dialog;
         });
 
         //This clears all graphics and polygons on map and redraws
-        function clear(){ 
+        function redraw(){ 
             map.graphics.clear();
-            tasks=[]
             drawAll();
         }
 
         //Markers are for sites assigned to the user currently selected
         function drawMarkers(){
-          var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
 
           for(var key in userAssigned){
               //Show marker if assigned to user
@@ -316,54 +309,79 @@ var map, dialog;
               }
           }
         }
-
+        function loadSelectedUserAssignments(){
+        //Load tasks from server
+            $.ajax({
+                url: "http://localhost:3000/users/"+selectedUser+"/assignments",
+                type: "POST",
+                data: JSON.stringify({user: {id: selectedUser}}),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                contentType: "application/json",
+                success: function(data){
+                  userAssigned={}
+                  assignedLong={}
+                  assignedLat={}
+                  for(var i=0;i<data.length;i++){
+                    userAssigned[data[i].location_id]=1;
+                    assignedLong[data[i].location_id]=data[i].long;
+                    assignedLat[data[i].location_id]=data[i].lat;
+                  }      
+                  redraw();   
+                },
+                error: function(error) {
+                  console.log(error.responseText)
+              }
+            });
+        }
 
         function drawAll(){
 
+            //Draw Location Sites
             var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
 
-            for(var i=0;i<currentSurveySites.graphics.length;i++){
+            if (currentSurveySites.visible==true){
+              for(var i=0;i<currentSurveySites.graphics.length;i++){
 
-              //Color Polygons based on assignment to anyone
-              if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
-                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
-              }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
-                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,completedSymbol);
-              }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==3){
-                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,revisitSymbol);
-              }else {
-                        var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
+                //Color Polygons based on assignment to anyone
+                if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
+                          var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,assignedSymbol);
+                }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
+                          var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,completedSymbol);
+                }else if (assigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==3){
+                          var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,revisitSymbol);
+                }else {
+                          var highlightGraphic = new Graphic(currentSurveySites.graphics[i].geometry,notAssignedSymbol);
+                }
+                  map.graphics.add(highlightGraphic);
+                
               }
-
-              if (currentSurveySites.visible==true){
-                map.graphics.add(highlightGraphic);
-              }
-
-              // //Show marker if assigned to user
-              // if (userAssigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==1){
-              //       var markerGraphic = new Graphic(currentSurveySites.graphics[i].geometry,marker)
-              //       map.graphics.add(markerGraphic);
-              // }else if (userAssigned[currentSurveySites.graphics[i].attributes.GTPOLYS_]==2){
-              //       var markerGraphic = new Graphic(currentSurveySites.graphics[i].geometry,marker)
-              //       map.graphics.add(markerGraphic);
-              // }
-
             }
+            drawPolygons();
+            //Draw Assignment Markers
             drawMarkers();
 
+        }
+
+        function drawPolygons(){
+          if (polygons.length<1)return;
+
+          for (var i=0;i<polygons.length;i++){
+            map.graphics.add(polygons[i]);
+          }
         }
 
 
         function assignTasks(){
             //get user to assign to
-            var fieldStaffSelect = document.getElementById('FieldStaffSelect');
-            var options=fieldStaffSelect.options;
-            var assigneeId=options[options.selectedIndex].value;
+          //var fieldStaffSelect = document.getElementById('FieldStaffSelect');
+           // var options=fieldStaffSelect.options;
+           // var assigneeId=options[options.selectedIndex].value;
             //set up ajax call
             $.ajax({
             url: "http://localhost:3000/assignments/assignTasks",
             type: "POST",
-            data: JSON.stringify({assigner: user,assignee: assigneeId,locations: tasks}),
+            data: JSON.stringify({assigner: user,assignee: selectedUser,locations: tasks}),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
