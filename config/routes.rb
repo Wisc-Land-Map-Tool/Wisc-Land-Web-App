@@ -32,7 +32,9 @@ WiscLandWebApp::Application.routes.draw do
   post '/assignments' => 'assignments#index'
   post '/dashboard/roleCheck' => 'dashboard#roleCheck'
   post '/dashboard/roleAdd' => 'dashboard#addRole'
+  post '/field_datas/submit' => 'field_datas#submit'
 
+  resources :field_datas
   resources :assignments
 
   # namespace :api do

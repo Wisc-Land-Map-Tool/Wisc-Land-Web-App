@@ -3,7 +3,7 @@ class Mobile::SessionsController < Devise::SessionsController
     respond_to do |format|  
     	format.json {  
         warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#new")  
-        render :status => 200, :json => { :error => "Success" }  
+        render :status => 200, :json => { :user => current_user.id, :error => "Success" }  
       }  	
       format.html { super }  
     end  
