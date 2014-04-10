@@ -1,20 +1,38 @@
-    <!-- <script src="arcgismap.js"></script> -->
-    <div class="row-fluid">
-      <div class="col-md-5">
-        <h1> User Summary </h1>
-        <table>
-          <tr>
-            <td width=50%>User<td />
-            <td width=50%>Number of tasks remaining<td />
-          </tr>
-          <% @users.each do |user| %>
-          <tr>
-            <td><%= user.email %><td />
-            <td><%= user.count %><td />
-          </tr>
-          <% end %>
-        </table>
-      </div>  
-      <div class="col-md-7">
-      <%= render 'layouts/map' %>
+<div class="row-fluid">
+  <div class="col-md-5">
+    <div class="panel panel-default">
+      <!-- Default panel contents -->
+      <div class="panel-heading"><h1 align="center">Task Assignments</h1></div>
+
+      <!-- Table -->
+      <table class="table table-hover">
+        <tr>
+          <th>User</th>
+          <th> # of tasks remaining</th>
+          <th>Select Tasks</th>
+        </tr>
+
+        <% @users.each do |user| %>
+        <tr>
+          <td>
+            <%= user.email %>
+          </td>
+          <td>
+            <%= user.count %>
+          </td>
+          <td>
+            <button class="btn btn-default"
+            data-id=<%= user.id %> >
+          Select
+          </button>
+          </td>
+        </tr>
+        <% end %>
+
+      </table>
     </div>
+  </div>
+  <div class="col-md-7">
+    <%= render 'layouts/map' %>
+  </div>
+</div>
