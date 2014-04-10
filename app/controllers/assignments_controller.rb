@@ -16,6 +16,6 @@ class AssignmentsController < ApplicationController
 			ass= Assignment.find_or_initialize_by(location_id: loc[:id])
 			ass.update(UserIdAssigner: assigner,user_id: assignee,location_id: loc[:id],Status: 1,long:loc[:long],lat:loc[:lat])
 		end
-		render :json => {success: 'true', redirect: 'http://localhost:3000/' }
+		render :json => {success: 'true', redirect: 'http://localhost:3000/dashboard/tasks' }
 	end
 end
