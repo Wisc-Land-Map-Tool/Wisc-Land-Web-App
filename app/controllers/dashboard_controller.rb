@@ -49,6 +49,8 @@ def addRole
 		@user.remove_role :field_staff
 	end
 
+	@user.save()
+
 	render :json => {success: 'true'}
 end
 

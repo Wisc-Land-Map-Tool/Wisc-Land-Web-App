@@ -56,7 +56,8 @@ $(function() {
     url: "http://localhost:3000/users/approve",
 
     success: function(data) {
-      // console.log(data);
+      location.reload();
+      
     }
   });
 

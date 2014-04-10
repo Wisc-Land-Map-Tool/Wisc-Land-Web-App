@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140409220509) do
+ActiveRecord::Schema.define(version: 20140410015031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,37 @@ ActiveRecord::Schema.define(version: 20140409220509) do
     t.decimal  "lat"
     t.decimal  "long"
     t.datetime "CompletionTime"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "classifications", force: true do |t|
+    t.integer  "class_id"
+    t.string   "class_name"
+    t.integer  "level"
+    t.integer  "parent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "field_data", force: true do |t|
+    t.integer  "covertype1_id"
+    t.integer  "covertype2_id"
+    t.integer  "covertype3_id"
+    t.integer  "confidence_level"
+    t.integer  "canopy_perc"
+    t.text     "cover_comment"
+    t.text     "canopy_comment"
+    t.text     "general_comment"
+    t.integer  "identification_method"
+    t.integer  "assignment_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "mature_height"
+  end
+
+  create_table "forest_types", force: true do |t|
+    t.string   "species_name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -54,6 +85,14 @@ ActiveRecord::Schema.define(version: 20140409220509) do
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
 
+  create_table "species_entries", force: true do |t|
+    t.integer  "field_data_id"
+    t.integer  "forest_type_id"
+    t.integer  "percentage"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "users", force: true do |t|
     t.string   "email",                  default: "",    null: false
     t.string   "encrypted_password",     default: "",    null: false
@@ -82,5 +121,19 @@ ActiveRecord::Schema.define(version: 20140409220509) do
   end
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
+
+  create_table "vegetation_entries", force: true do |t|
+    t.integer  "vegetation_id"
+    t.integer  "data_id"
+    t.integer  "percentage"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "vegetations", force: true do |t|
+    t.string   "vegetation_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end
