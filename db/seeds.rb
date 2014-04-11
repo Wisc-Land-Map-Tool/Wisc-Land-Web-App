@@ -7,4 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 [:admin, :field_manager, :field_staff].each do |role|
   Role.find_or_create_by_name({ name: role })
+
+User.new({:first_name => "system", :last_name => "admin", :email => "test_admin@example.com", :approved => 1, :password => "wisc_admin", :password_confirmation => "wisc_admin" }).save(:validate => false)
+
 end

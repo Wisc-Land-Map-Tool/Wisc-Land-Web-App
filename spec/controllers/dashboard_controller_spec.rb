@@ -10,7 +10,6 @@ describe DashboardController do
 
 			@request.env["devise.mapping"] = Devise.mappings[:user]
 			user = FactoryGirl.create(:user)
-			user.confirm!
 			sign_in user
 			get 'roles'
 				
@@ -29,7 +28,6 @@ describe DashboardController do
 			user3 = FactoryGirl.create(:user)
 			user4 = FactoryGirl.create(:user)
 
-			user.confirm!
 			sign_in user
 			get 'roles'
 
@@ -52,7 +50,6 @@ describe DashboardController do
 			user3 = FactoryGirl.create(:user)
 			user4 = FactoryGirl.create(:user)
 
-			user.confirm!
 			sign_in user
 			get 'index'
 
