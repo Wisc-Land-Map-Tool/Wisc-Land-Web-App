@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 20140410034139) do
     t.boolean  "mature_height"
   end
 
-  create_table "forest_types", force: true do |t|
+  create_table "forest_species", force: true do |t|
     t.string   "species_name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -62,14 +62,6 @@ ActiveRecord::Schema.define(version: 20140410034139) do
   create_table "locations", force: true do |t|
     t.decimal  "Long"
     t.decimal  "Lat"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "points", force: true do |t|
-    t.integer  "location_id"
-    t.decimal  "longitude"
-    t.decimal  "latitude"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
