@@ -7,7 +7,30 @@ https://github.com/Wisc-Land-Map-Tool/Wisc-Land-Mobile-App
 
 # Set up for local use
 
-Ruby 2.1 and Rails 4.0 is required for use of this application. Please see the Gemfile for other dependencies.
+Ruby 2.1 and Rails 4.0 is required for use of this application. 
+
+The following gems are required.  They can be found at https://rubygems.org using the ruby gem package or by using bundle install as listed below.
+(versions are listed after package name)
+gem "pg", "~> 0.17.1"
+gem 'bootstrap-sass', '~> 3.1.1'
+gem 'devise'
+gem 'bcrypt-ruby'
+gem "cancan"
+gem 'rolify'
+gem 'sprockets', '2.11.0'
+gem 'simplecov', :require=> false, :group => :test
+gem 'rspec-rails', '2.13.1'
+gem 'factory_girl_rails'
+gem 'selenium-webdriver', '2.35.1'
+gem 'capybara', '2.1.0'
+gem 'sass-rails', '4.0.1'
+gem 'uglifier', '2.1.1'
+gem 'coffee-rails', '4.0.1'
+gem 'jquery-rails', '3.0.4'
+gem 'turbolinks', '1.1.1'
+gem 'jbuilder', '1.0.2'
+gem 'sdoc', '0.3.20', require: false
+gem 'rails_12factor'
 
 For tutorials on how to set up Rails and Ruby on your machine, see the following:
 
