@@ -185,7 +185,7 @@ var map, dialog;
 
         var assignedSymbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
-            SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 3), 
+            SimpleLineSymbol.STYLE_SOLID, new Color([0,0,255]), 3), 
           new Color([125,125,125,0.35]));
         
         var completedSymbol = new SimpleFillSymbol(
@@ -194,9 +194,12 @@ var map, dialog;
           new Color([125,125,125,0.35]));
          var revisitSymbol = new SimpleFillSymbol(
           SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
-            SimpleLineSymbol.STYLE_SOLID, new Color([200,200,200]), 3), 
+            SimpleLineSymbol.STYLE_SOLID, new Color([0,0,255]), 3), 
           new Color([125,125,125,0.35]));
-
+          var selectedSymbol = new SimpleFillSymbol(
+          SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID, new Color([255,255,0]), 3), 
+          new Color([125,125,125,0.35]));
         
           //Event handlers
           map.on("load", initToolbar);
@@ -273,15 +276,10 @@ var map, dialog;
           //query.outFields=["GTPOLYS_"]
           surveySites.queryFeatures(query, function(results){
             for (var i=0;i<results.features.length;i++){
-              tasks.push({id: results.features[i].attributes["GTPOLYS_"], long: results.features[i]._extent.getCenter().getLongitude(), lat: results.features[i]._extent.getCenter().getLatitude()})
+              tasks.push({id: results.features[i].attributes["GTPOLYS_"], long: results.features[i]._extent.getCenter().getLongitude(), lat: results.features[i]._extent.getCenter().getLatitude(),geometry:results.features[i].geometry})
             }
-          })
-
-          // figure out which symbol to use
-          var symbol=fillSymbol
-          var gfx=new Graphic(evt.geometry, symbol);
-          polygons.push(gfx)
-          map.graphics.add(gfx);
+            redraw();
+          });
 
         }
 
@@ -293,16 +291,6 @@ var map, dialog;
         function initializeFieldStaff(){
           //get drop down menu          
           var fieldStaffSelect = document.getElementById('FieldStaffSelect');
-
-        //   //ajax query to get users
-        //   jQuery.getJSON('http://localhost:3000/users',function(fieldStaff){
-        //     for (var i=0;i<fieldStaff.length;i++){
-        //       var staffOption = document.createElement("option");
-        //       staffOption.text = fieldStaff[i].email;
-        //       staffOption.value = fieldStaff[i].id;
-        //       fieldStaffSelect.appendChild(staffOption);
-        //     }
-        //   });
           
          }
 
@@ -389,11 +377,15 @@ var map, dialog;
         }
 
         function drawPolygons(){
-          if (polygons.length<1)return;
-
-          for (var i=0;i<polygons.length;i++){
-            map.graphics.add(polygons[i]);
+          if (tasks.length<1)return;
+          for (var i=0;i<tasks.length;i++){
+            var selectedGraphic = new Graphic(tasks[i].geometry,selectedSymbol);
+            map.graphics.add(selectedGraphic)
           }
+
+          //for (var i=0;i<polygons.length;i++){
+          //  map.graphics.add(polygons[i]);
+          //}
         }
 
 
