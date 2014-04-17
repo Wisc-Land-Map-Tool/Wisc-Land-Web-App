@@ -276,7 +276,7 @@ var map, dialog;
           //query.outFields=["GTPOLYS_"]
           surveySites.queryFeatures(query, function(results){
             for (var i=0;i<results.features.length;i++){
-              tasks.push({id: results.features[i].attributes["GTPOLYS_"], long: results.features[i]._extent.getCenter().getLongitude(), lat: results.features[i]._extent.getCenter().getLatitude(),geometry:results.features[i].geometry})
+              tasks.push({id: results.features[i].attributes["GTPOLYS_"],geometry:results.features[i].geometry})
             }
             redraw();
           });

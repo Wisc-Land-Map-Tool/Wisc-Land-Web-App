@@ -35,7 +35,11 @@ WiscLandWebApp::Application.routes.draw do
   post '/field_datas/submit' => 'field_datas#submit'
 
   resources :field_datas
-  resources :assignments
+  resources :assignments do
+    collection do
+      post 'getTasks'
+    end
+  end
 
   # namespace :api do
   #   resources :users, :defaults => { :format => 'xml' }
