@@ -227,8 +227,8 @@ var map, dialog;
         });
         
         query(".btn").on("click", function(evt) {
-          if(!evt.toElement.attributes["data-id"])return;
-          selectedUser=evt.toElement.attributes["data-id"].nodeValue;
+          if(!$(evt.target).data("id"))return;
+          selectedUser=$(evt.target).data("id");
           loadSelectedUserAssignments();
 
         });
