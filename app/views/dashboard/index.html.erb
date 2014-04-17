@@ -39,4 +39,7 @@
   <div class="col-md-7">
     <%= render 'layouts/map' %>
   </div>
+  <%= javascript_tag do %>
+  window.productsURL = '<%= ENV["ENVURL"] %>';
+<% end %>
 </div>

@@ -78,4 +78,7 @@
       </div>
     </div>
   </div>
+  <%= javascript_tag do %>
+  window.productsURL = '<%= ENV["ENVURL"] %>';
+<% end %>
 </div>

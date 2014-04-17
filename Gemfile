@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.1.0'
+ruby '2.1.1'
 #ruby-gemset=railstutorial_rails_4_0
 
 gem 'rails', '4.0.3'
@@ -9,6 +9,7 @@ gem 'devise'
 gem 'bcrypt-ruby'
 gem "cancan"
 gem 'rolify'
+gem 'figaro'
 gem 'sprockets', '2.11.0'
 gem 'simplecov', :require=> false, :group => :test
 

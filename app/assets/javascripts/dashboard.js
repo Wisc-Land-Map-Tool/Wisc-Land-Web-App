@@ -16,7 +16,7 @@ $(function() {
       data: {
         id: userId
       },
-      url: "http://localhost:3000/dashboard/roleCheck",
+      url: window.productsURL+ "dashboard/roleCheck",
       success: function(data) {
         var i;
         console.log(data);
@@ -53,7 +53,7 @@ $(function() {
     data: {
       id: userId
     },
-    url: "http://localhost:3000/users/approve",
+    url: window.productsURL+"users/approve",
 
     success: function(data) {
       location.reload();
@@ -79,7 +79,7 @@ $(function() {
         id: id,
         roles: [checkedValueAdmin, checkedValueManager, checkedValueStaff]
       },
-      url: "http://localhost:3000/dashboard/roleAdd",
+      url: window.productsURL+"dashboard/roleAdd",
       success: function(data) {
         console.log(data);
         $('#ManageRoles').modal('hide');
@@ -140,7 +140,7 @@ var map, dialog;
 
         //Load tasks from server
         $.ajax({
-            url: "http://localhost:3000/assignments",
+            url: window.productsURL+"assignments",
             type: "POST",
             data: JSON.stringify({user: {id: 1}}),
             dataType: "json",
@@ -227,8 +227,8 @@ var map, dialog;
         });
         
         query(".btn").on("click", function(evt) {
-          if(!evt.toElement.attributes["data-id"])return;
-          selectedUser=evt.toElement.attributes["data-id"].nodeValue;
+          if(!$(evt.target).data("id"))return;
+          selectedUser=$(evt.target).data("id");
           loadSelectedUserAssignments();
 
         });
@@ -325,7 +325,7 @@ var map, dialog;
         function loadSelectedUserAssignments(){
         //Load tasks from server
             $.ajax({
-                url: "http://localhost:3000/users/"+selectedUser+"/assignments",
+                url: window.productsURL+"users/"+selectedUser+"/assignments",
                 type: "POST",
                 data: JSON.stringify({user: {id: selectedUser}}),
                 dataType: "json",
@@ -396,7 +396,7 @@ var map, dialog;
            // var assigneeId=options[options.selectedIndex].value;
             //set up ajax call
             $.ajax({
-            url: "http://localhost:3000/assignments/assignTasks",
+            url: window.productsURL+"assignments/assignTasks",
             type: "POST",
             data: JSON.stringify({assigner: user,assignee: selectedUser,locations: tasks}),
             dataType: "json",
