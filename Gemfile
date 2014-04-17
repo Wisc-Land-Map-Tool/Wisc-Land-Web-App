@@ -9,6 +9,7 @@ gem 'devise'
 gem 'bcrypt-ruby'
 gem "cancan"
 gem 'rolify'
+gem 'figaro'
 gem 'sprockets', '2.11.0'
 gem 'simplecov', :require=> false, :group => :test
 
