@@ -14,9 +14,9 @@ class AssignmentsController < ApplicationController
 		locations.each do |loc|
 			logger.debug loc
 			ass= Assignment.find_or_initialize_by(location_id: loc[:id])
-			ass.update(UserIdAssigner: assigner,user_id: assignee,location_id: loc[:id],Status: 1)
+			ass.update(UserIdAssigner: assigner,user_id: assignee,location_id: loc[:id],Status: 1, polygon: loc[:polygon])
 		end
-		render :json => {success: 'true', redirect: 'http://localhost:3000/dashboard/tasks' }
+		render :json => {success: 'true', redirect: 'http://localhost:3000/' }
 	end
 
 	def getTasks

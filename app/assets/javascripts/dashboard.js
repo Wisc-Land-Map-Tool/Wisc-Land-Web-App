@@ -108,7 +108,41 @@ var map, dialog;
         //ArcGIS Online Map
         var webmapId="ebe782cf918c45a19175475bc176f08c";
 
+        //
+        var map = new esri.Map("mapDiv", {
+            basemap:    "streets",
+            center: [-89.5, 44.5],
+            zoom: 8
+        });
 
+        var surveySites = new FeatureLayer("https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/wiscland_gtpolys/FeatureServer/0",{
+                            mode: FeatureLayer.ON_DEMAND,
+                            outFields: ["*"]
+          });
+          
+          map.addLayer(surveySites);
+
+          var queryTasks = new esri.tasks.Query();
+          queryTasks.where="GTPOLYS_ <= 2000";
+          queryTasks.returnGeometry = true;
+          queryTasks.outFields = ["*"];
+          surveySites.queryFeatures(queryTasks, function(results){
+          })
+          queryTasks.where="GTPOLYS_ >2000 AND GTPOLYS_ <= 4000";
+          surveySites.queryFeatures(queryTasks, function(results){
+          })
+          queryTasks.where="GTPOLYS_ >4000 AND GTPOLYS_ <= 6000";
+          surveySites.queryFeatures(queryTasks, function(results){
+          })
+          queryTasks.where="GTPOLYS_ >6000 AND GTPOLYS_ <= 8000";
+          surveySites.queryFeatures(queryTasks, function(results){
+          })
+          queryTasks.where="GTPOLYS_ >8000 AND GTPOLYS_ <= 10000";
+          surveySites.queryFeatures(queryTasks, function(results){
+          })
+          queryTasks.where="GTPOLYS_ >10000 AND GTPOLYS_ <= 12000";
+          surveySites.queryFeatures(queryTasks, function(results){
+          })
 
         var selectedUser;  //User to display assignments for
         var assignedLong = {};  //Hash of assignments for selected User
@@ -118,18 +152,18 @@ var map, dialog;
         var user=1;           //Logged in user for Assigner ID
         var assigned = {};    //All assignments
 
-        arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
-        map = response.map;   
+        //arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
+       // map = response.map;   
 
         //Tasks to assign
         var tasks=[];
         var polygons=[];
   
 
-        var surveySites = map.getLayer(map.graphicsLayerIds[0]);
-        surveySites.setRenderer(new SimpleRenderer(symbol));
-        map.addLayer(surveySites);
-        map.infoWindow.resize(245,125);
+        //var surveySites = map.getLayer(map.graphicsLayerIds[0]);
+        //surveySites.setRenderer(new SimpleRenderer(symbol));
+        //map.addLayer(surveySites);
+        //map.infoWindow.resize(245,125);
         
 
         dialog = new TooltipDialog({
@@ -208,17 +242,6 @@ var map, dialog;
               redraw()
           });
 
-          map.on("zoom-end",function(evt){
-
-            if ( (evt.zoomFactor<1) && (map.getScale()>1000000) ){
-                map.graphics.clear();
-                surveySites.visible=false;
-            }else if(map.getScale()<1000000){
-                surveySites.visible=true;
-            }
-          });
-
-
         //close the dialog when the mouse leaves the highlight graphic
         map.on("load", function(){
           map.graphics.enableMouseEvents();
@@ -227,9 +250,9 @@ var map, dialog;
         });
         
         query(".btn").on("click", function(evt) {
-          if(!$(evt.target).data("id"))return;
+         if(!$(evt.target).data("id"))return;
           selectedUser=$(evt.target).data("id");
-          loadSelectedUserAssignments();
+          //loadSelectedUserAssignments();
 
         });
 
@@ -276,7 +299,15 @@ var map, dialog;
           //query.outFields=["GTPOLYS_"]
           surveySites.queryFeatures(query, function(results){
             for (var i=0;i<results.features.length;i++){
-              tasks.push({id: results.features[i].attributes["GTPOLYS_"],geometry:results.features[i].geometry})
+              var geometry=results.features[i].geometry;
+              geometry=esri.geometry.webMercatorToGeographic(geometry)
+              var ring=geometry.rings[0]
+              var array=[]
+              for (var j=0;j<ring.length;j++){
+                var point=ring[j];
+                array.push([point[1],point[0]])
+              }
+              tasks.push({id: results.features[i].attributes["GTPOLYS_"],geometry:results.features[i].geometry,polygon: JSON.stringify(array)})
             }
             redraw();
           });
@@ -284,7 +315,6 @@ var map, dialog;
         }
 
         function closeDialog() {
-          map.graphics.clear();
           dijitPopup.close(dialog);
         }
                 //Load users into potential field staff drop down (or menu if this changes)
@@ -322,38 +352,38 @@ var map, dialog;
               }
           }
         }
-        function loadSelectedUserAssignments(){
-        //Load tasks from server
-            $.ajax({
-                url: window.productsURL+"users/"+selectedUser+"/assignments",
-                type: "POST",
-                data: JSON.stringify({user: {id: selectedUser}}),
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                contentType: "application/json",
-                success: function(data){
-                  userAssigned={}
-                  assignedLong={}
-                  assignedLat={}
-                  for(var i=0;i<data.length;i++){
-                    userAssigned[data[i].location_id]=1;
-                    assignedLong[data[i].location_id]=data[i].long;
-                    assignedLat[data[i].location_id]=data[i].lat;
-                  }      
-                  redraw();   
-                },
-                error: function(error) {
-                  console.log(error.responseText)
-              }
-            });
-        }
+        // function loadSelectedUserAssignments(){
+        // //Load tasks from server
+        //     $.ajax({
+        //         url: window.productsURL+"users/"+selectedUser+"/assignments",
+        //         type: "POST",
+        //         data: JSON.stringify({user: {id: selectedUser}}),
+        //         dataType: "json",
+        //         contentType: "application/json; charset=utf-8",
+        //         contentType: "application/json",
+        //         success: function(data){
+        //           userAssigned={}
+        //           assignedLong={}
+        //           assignedLat={}
+        //           for(var i=0;i<data.length;i++){
+        //             userAssigned[data[i].location_id]=1;
+        //             assignedLong[data[i].location_id]=data[i].long;
+        //             assignedLat[data[i].location_id]=data[i].lat;
+        //           }      
+        //           redraw();   
+        //         },
+        //         error: function(error) {
+        //           console.log(error.responseText)
+        //       }
+        //     });
+        // }
 
         function drawAll(){
 
             //Draw Location Sites
             var currentSurveySites = map.getLayer(map.graphicsLayerIds[0]);
 
-            if (currentSurveySites.visible==true){
+           if (currentSurveySites.visible==true){
               for(var i=0;i<currentSurveySites.graphics.length;i++){
 
                 //Color Polygons based on assignment to anyone
@@ -370,6 +400,7 @@ var map, dialog;
                 
               }
             }
+
             drawPolygons();
             //Draw Assignment Markers
             drawMarkers();
@@ -382,18 +413,10 @@ var map, dialog;
             var selectedGraphic = new Graphic(tasks[i].geometry,selectedSymbol);
             map.graphics.add(selectedGraphic)
           }
-
-          //for (var i=0;i<polygons.length;i++){
-          //  map.graphics.add(polygons[i]);
-          //}
         }
 
 
         function assignTasks(){
-            //get user to assign to
-          //var fieldStaffSelect = document.getElementById('FieldStaffSelect');
-           // var options=fieldStaffSelect.options;
-           // var assigneeId=options[options.selectedIndex].value;
             //set up ajax call
             $.ajax({
             url: window.productsURL+"assignments/assignTasks",
@@ -419,5 +442,5 @@ var map, dialog;
 
 
 
-  }); 
+ // }); 
       });
