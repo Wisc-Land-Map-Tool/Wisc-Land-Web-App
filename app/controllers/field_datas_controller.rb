@@ -1,6 +1,6 @@
 class FieldDatasController < ApplicationController
 	def submit
-		@fdata=FieldData.create( covertype1_id: params[:coverType1],  covertype2_id: params[:coverType2], covertype3_id: params[:coverType3], confidence_level: params[:confidenceLevel], canopy_perc: params[:canopyCov], cover_comment: params[:forestSpeciesComments], canopy_comment: params[:canopyComments],  general_comment: params[:additionalComments], identification_method: params[:methodOfID], assignment_id:  1 ,mature_height: params[:treesAreMatureHeight])
+		@fdata=FieldData.create( covertype1_id: params[:coverType1],  covertype2_id: params[:coverType2], covertype3_id: params[:coverType3], confidence_level: params[:confidenceLevel], canopy_perc: params[:canopyCov], cover_comment: params[:forestSpeciesComments], canopy_comment: params[:canopyComments],  general_comment: params[:additionalComments], identification_method: params[:methodOfID], assignment_id:  params[:assignment_id], mature_height: params[:treesAreMatureHeight])
 		dataid=@fdata.id
 
 		logger.debug @fdata[:user_id]
