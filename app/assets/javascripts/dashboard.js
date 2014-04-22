@@ -132,22 +132,7 @@ var map, dialog;
             surveySites.queryFeatures(query, function(results){
               var location=results.features[0].attributes["GTPOLYS_"];
               map.infoWindow.setTitle("Task #"+location);
-              var status=0;
-              if (assignedData[location]){
-                status=assignedData[location].Status;
-              }
-              var content="";
-              if(status==1){
-                    var assignerId=assignedData[location].user_id;
-                    var assigneeId=assignedData[location].UserIdAssigned;
-                    content="Assigned to: "+usernames[assignerId]+"<br>Assigned by: "+usernames[assigneeId];
-              }else if(status==2){
-                  var assigneeId=assignedData[location].UserIdAssigned;
-                  content="Completed by: "+usernames[assigneeId];
-              }else{
-                    content="Not yet assigned";
-              }
-              map.infoWindow.setContent(content);
+              map.infoWindow.setContent(getPopupContent(assignedData[location]));
               map.infoWindow.show(evt.mapPoint);
             });
         });
@@ -338,6 +323,25 @@ var map, dialog;
           });
 
         }
+        function getPopupContent(data){
+              var status=0;
+              if (data){
+                status=data.Status;
+              }
+              var content="";
+              if(status==1){
+                    var assignerId=data.user_id;
+                    var assigneeId=data.UserIdAssigned;
+                    content="Assigned to: "+usernames[assignerId]+"<br>Assigned by: "+usernames[assigneeId];
+              }else if(status==2){
+                  var assigneeId=data.UserIdAssigned;
+                  content="Completed by: "+usernames[assigneeId];
+              }else{
+                    content="Not yet assigned";
+              }
+              return content;
+        }
+
 
                 //Load users into potential field staff drop down (or menu if this changes)
         function initializeFieldStaff(){
