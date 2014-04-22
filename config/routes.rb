@@ -19,9 +19,7 @@ WiscLandWebApp::Application.routes.draw do
     end
   end
   
-  
-
-  
+  get '/classifications/index' => 'classification#index'
   get '/dashboard/roles' => 'dashboard#roles', :as => 'roles'
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
   get '/dashboard/tasks' => 'dashboard#tasks', :as => 'tasks'

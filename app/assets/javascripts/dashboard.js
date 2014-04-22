@@ -163,6 +163,7 @@ var map, dialog;
         var assignedLong = {};  //Hash of assignments for selected User
         var assignedLat = {};
         var userAssigned = {};
+        var classifications ={};
 
         var user=1;           //Logged in user for Assigner ID
         var assigned = {};    //All assignments
@@ -192,7 +193,7 @@ var map, dialog;
           }
         });
 
-        //Load tasks from server
+        //Load users from server
         $.ajax({
             url: window.productsURL+"users",
             type: "GET",
@@ -202,6 +203,23 @@ var map, dialog;
             success: function(data){
               for(var i=0;i<data.length;i++){
                 usernames[data[i].id]=data[i].first_name+" "+data[i].last_name;
+              }         
+            },
+            
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+        //Load classificationss from server
+        $.ajax({
+            url: window.productsURL+"classifications/index",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              for(var i=0;i<data.length;i++){
+                classifications[data[i].id]=data[i].class_name;
               }         
             },
             
@@ -323,6 +341,24 @@ var map, dialog;
           });
 
         }
+
+        function getFieldData(id){
+          $.ajax({
+            url: window.productsURL+"field_data",
+            type: "POST",
+            data: JSON.stringify({'id': id}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+                return data;
+            },         
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+        }
+
         function getPopupContent(data){
               var status=0;
               if (data){
@@ -335,7 +371,19 @@ var map, dialog;
                     content="Assigned to: "+usernames[assignerId]+"<br>Assigned by: "+usernames[assigneeId];
               }else if(status==2){
                   var assigneeId=data.UserIdAssigned;
-                  content="Completed by: "+usernames[assigneeId];
+                  // fielddata=getFieldData(data.location_id);
+                  // var covertype1=fielddata.covertype1_id;
+                  // var covertype2=fielddata.covertype2_id;
+                  // var covertype3=fielddata.covertype3_id;
+                  // content="Completed by: "+usernames[assigneeId]+"<br>";
+                  // content+="Cover Type: "+classifications[covertype1]
+                  // if(covertype2){
+                  //   content+= ", "+classifications[covertype2];
+                  // }
+                  // if(covertype3){
+                  //   content+= ", "+classifications[covertype3];
+                  // }
+                  // content+="<br>"
               }else{
                     content="Not yet assigned";
               }
