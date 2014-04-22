@@ -97,30 +97,60 @@ var map, dialog;
         "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol","esri/arcgis/utils", 
         "esri/renderers/SimpleRenderer", "esri/symbols/PictureFillSymbol","esri/graphic", "esri/lang","esri/tasks/query",
         "dojo/_base/Color", "dojo/number", "dojo/dom-style", "esri/InfoTemplate","dojo/query",
-        "dijit/TooltipDialog","dojo/dom","dojo/on", "dijit/popup", "dojo/domReady!"
+        "dijit/TooltipDialog","dojo/dom","dojo/on", "dijit/popup",  "esri/dijit/InfoWindowLite",        "dojo/dom-construct",
+        "dojo/domReady!"
+
       ], function(
         Map, Draw, FeatureLayer,SimpleMarkerSymbol,
         SimpleFillSymbol, SimpleLineSymbol, arcgisUtils,
         SimpleRenderer,PictureFillSymbol, Graphic, esriLang,Query,
         Color, number, domStyle, InfoTemplate,query,
-        TooltipDialog, dom,on,dijitPopup
+        TooltipDialog, dom,on,dijitPopup, InfoWindowLite,domConstruct
       ) {
-        //ArcGIS Online Map
-        var webmapId="ebe782cf918c45a19175475bc176f08c";
 
-        //
         var map = new esri.Map("mapDiv", {
             basemap:    "streets",
             center: [-89.5, 44.5],
             zoom: 8
         });
 
+        var infoWindow = new InfoWindowLite(null, domConstruct.create("div", null, null, map.root));
+        infoWindow.startup();
+        map.setInfoWindow(infoWindow);
+
         var surveySites = new FeatureLayer("https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/wiscland_gtpolys/FeatureServer/0",{
                             mode: FeatureLayer.ON_DEMAND,
                             outFields: ["*"]
-          });
+        });
           
-          map.addLayer(surveySites);
+        map.addLayer(surveySites);
+
+        map.on("click",function(evt){
+            if (!evt.graphic) return;
+            var query = new esri.tasks.Query();
+            query.geometry=evt.graphic.geometry;
+            surveySites.queryFeatures(query, function(results){
+              var location=results.features[0].attributes["GTPOLYS_"];
+              map.infoWindow.setTitle("Task #"+location);
+              var status=0;
+              if (assignedData[location]){
+                status=assignedData[location].Status;
+              }
+              var content="";
+              if(status==1){
+                    var assignerId=assignedData[location].user_id;
+                    var assigneeId=assignedData[location].UserIdAssigned;
+                    content="Assigned to: "+usernames[assignerId]+"<br>Assigned by: "+usernames[assigneeId];
+              }else if(status==2){
+                  var assigneeId=assignedData[location].UserIdAssigned;
+                  content="Completed by: "+usernames[assigneeId];
+              }else{
+                    content="Not yet assigned";
+              }
+              map.infoWindow.setContent(content);
+              map.infoWindow.show(evt.mapPoint);
+            });
+        });
 
           var queryTasks = new esri.tasks.Query();
           queryTasks.where="GTPOLYS_ <= 2000";
@@ -151,26 +181,11 @@ var map, dialog;
 
         var user=1;           //Logged in user for Assigner ID
         var assigned = {};    //All assignments
-
-        //arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
-       // map = response.map;   
-
-        //Tasks to assign
+        var assignedData ={};
+        var usernames={};
         var tasks=[];
         var polygons=[];
-  
-
-        //var surveySites = map.getLayer(map.graphicsLayerIds[0]);
-        //surveySites.setRenderer(new SimpleRenderer(symbol));
-        //map.addLayer(surveySites);
-        //map.infoWindow.resize(245,125);
         
-
-        dialog = new TooltipDialog({
-          id: "tooltipDialog",
-          style: "position: absolute; width: 250px; font: normal normal normal 10pt Helvetica;z-index:100"
-        });
-        dialog.startup();
 
         //Load tasks from server
         $.ajax({
@@ -182,7 +197,26 @@ var map, dialog;
             contentType: "application/json",
             success: function(data){
               for(var i=0;i<data.length;i++){
-                assigned[data[i].location_id]=1;
+                assigned[data[i].location_id]=data[i].Status;
+                assignedData[data[i].location_id]=data[i];
+              }         
+            },
+            
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+
+        //Load tasks from server
+        $.ajax({
+            url: window.productsURL+"users",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              for(var i=0;i<data.length;i++){
+                usernames[data[i].id]=data[i].first_name+" "+data[i].last_name;
               }         
             },
             
@@ -241,19 +275,10 @@ var map, dialog;
           map.on("update-end",function(){
               redraw()
           });
-
-        //close the dialog when the mouse leaves the highlight graphic
-        map.on("load", function(){
-          map.graphics.enableMouseEvents();
-          map.graphics.on("mouse-out", closeDialog);
-          
-        });
         
         query(".btn").on("click", function(evt) {
          if(!$(evt.target).data("id"))return;
           selectedUser=$(evt.target).data("id");
-          //loadSelectedUserAssignments();
-
         });
 
 
@@ -314,9 +339,6 @@ var map, dialog;
 
         }
 
-        function closeDialog() {
-          dijitPopup.close(dialog);
-        }
                 //Load users into potential field staff drop down (or menu if this changes)
         function initializeFieldStaff(){
           //get drop down menu          
@@ -324,12 +346,6 @@ var map, dialog;
           
          }
 
-        dojo.connect(surveySites, "onClick", function(evt) {
-            var graphicAttributes = evt.graphic.attributes;
-            map.infoWindow.setTitle("title");
-            map.infoWindow.setContent("content");
-            map.infoWindow.show(evt.screenPoint,map.getInfoWindowAnchor(evt.screenPoint));
-        });
 
         //This clears all graphics and polygons on map and redraws
         function redraw(){ 
@@ -352,31 +368,7 @@ var map, dialog;
               }
           }
         }
-        // function loadSelectedUserAssignments(){
-        // //Load tasks from server
-        //     $.ajax({
-        //         url: window.productsURL+"users/"+selectedUser+"/assignments",
-        //         type: "POST",
-        //         data: JSON.stringify({user: {id: selectedUser}}),
-        //         dataType: "json",
-        //         contentType: "application/json; charset=utf-8",
-        //         contentType: "application/json",
-        //         success: function(data){
-        //           userAssigned={}
-        //           assignedLong={}
-        //           assignedLat={}
-        //           for(var i=0;i<data.length;i++){
-        //             userAssigned[data[i].location_id]=1;
-        //             assignedLong[data[i].location_id]=data[i].long;
-        //             assignedLat[data[i].location_id]=data[i].lat;
-        //           }      
-        //           redraw();   
-        //         },
-        //         error: function(error) {
-        //           console.log(error.responseText)
-        //       }
-        //     });
-        // }
+
 
         function drawAll(){
 
@@ -440,7 +432,4 @@ var map, dialog;
 
         }
 
-
-
- // }); 
-      });
+});
