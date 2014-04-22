@@ -94,19 +94,27 @@ To use the application, sign up for an account to enter the dashboard and utiliz
 
 # Using the map
 
-The map is currently only partially featured as we fix a few bugs.  To view polygons, zoom in by double clicking on Wisconsin.  Polygons will show up once you get to the county level.  You can assign polygons to a user, click "Draw Region", then click points to construct a polygon around one or more sites to be surveyed.  Double-click to end drawing.  Then you can select a user on in the drop down menu in the top right and click assign points to create new tasks for them.  The page should reload and the Number of Tasks Remaining for that user should be incremented.
+The map is currently only partially featured as we fix a few bugs.  To view polygons, zoom in by double clicking on Wisconsin.  There are thousands of polygons to draw each time the map changes, so when not zoomed in, the map can be a bit unresponsive until we optimize it.
+
+To assign polygons to a user, click "Draw Region", then click points to construct a polygon around one or more sites to be surveyed.  Double-click to end drawing.  Then you can select a user in the menu in the left side and click assign points to create new tasks for them.  The page should reload and the Number of Tasks Remaining for that user should be incremented.
+
+To see the current status of a polygon and who it has been assigned to (if assigned), click on that polygon.  A popup with additional information will come up.
+
 
 A Polygon on the map corresponds to a survey site.
-
 
 The color code is as follows:
 
 Red - Unassigned
 
-Yellow - Assigned
+Yellow - Selected (with polygon)
+
+Blue - Assigned
 
 Green - Completed
 
-Grey - Revisit Needed
+
+
+
 
 
