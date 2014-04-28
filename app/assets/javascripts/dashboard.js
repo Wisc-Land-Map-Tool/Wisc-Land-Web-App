@@ -333,7 +333,7 @@ var map, dialog;
               var array=[]
               for (var j=0;j<ring.length;j++){
                 var point=ring[j];
-                array.push([point[1],point[0]])
+                array.push([point[0],point[1]])
               }
               tasks.push({id: results.features[i].attributes["GTPOLYS_"],geometry:results.features[i].geometry,polygon: JSON.stringify(array)})
             }
