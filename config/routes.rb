@@ -20,6 +20,9 @@ WiscLandWebApp::Application.routes.draw do
   end
   
   get '/classifications/index' => 'classification#index'
+  get '/forest_types/index' => 'forest_types#index'
+  get '/vegetations/index' => 'vegetations#index'
+
   get '/dashboard/roles' => 'dashboard#roles', :as => 'roles'
   get '/dashboard/classifications' => 'dashboard#classifications', :as => 'classifications'
   get '/dashboard/tasks' => 'dashboard#tasks', :as => 'tasks'
@@ -31,6 +34,7 @@ WiscLandWebApp::Application.routes.draw do
   post '/dashboard/roleCheck' => 'dashboard#roleCheck'
   post '/dashboard/roleAdd' => 'dashboard#addRole'
   post '/field_datas/submit' => 'field_datas#submit'
+  post '/field_datas/getFieldDataDetails' => 'field_datas#getFieldDataDetails'
 
   resources :field_datas
   resources :assignments do

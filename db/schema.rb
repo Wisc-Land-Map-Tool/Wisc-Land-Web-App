@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140417020014) do
+ActiveRecord::Schema.define(version: 20140428010320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,10 +52,16 @@ ActiveRecord::Schema.define(version: 20140417020014) do
     t.boolean  "mature_height"
   end
 
+  create_table "forest_species", force: true do |t|
+    t.integer "speciesId"
+    t.string  "speciesName"
+  end
+
   create_table "forest_types", force: true do |t|
     t.string   "species_name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "forest_id"
   end
 
   create_table "locations", force: true do |t|
@@ -132,6 +138,7 @@ ActiveRecord::Schema.define(version: 20140417020014) do
     t.string   "vegetation_name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "vegetation_id"
   end
 
 end

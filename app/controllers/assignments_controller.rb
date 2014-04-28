@@ -20,7 +20,7 @@ class AssignmentsController < ApplicationController
 	end
 
 	def getTasks
-		@assignments = Assignment.where(:user_id => params[:id])
+		@assignments = Assignment.where(:user_id => params[:id],:Status => 1)
 		render :json => @assignments.to_json
 	end
 end

@@ -132,7 +132,7 @@ var map, dialog;
             surveySites.queryFeatures(query, function(results){
               var location=results.features[0].attributes["GTPOLYS_"];
               map.infoWindow.setTitle("Task #"+location);
-              map.infoWindow.setContent(getPopupContent(assignedData[location]));
+              map.infoWindow.setContent(getPopupContent(assignedData[location],evt.mapPoint));
               map.infoWindow.show(evt.mapPoint);
             });
         });
@@ -164,6 +164,8 @@ var map, dialog;
         var assignedLat = {};
         var userAssigned = {};
         var classifications ={};
+        var forestNames={};
+        var vegetationNames={};
 
         var user=1;           //Logged in user for Assigner ID
         var assigned = {};    //All assignments
@@ -210,7 +212,7 @@ var map, dialog;
               console.log(error.responseText)
           }
         });
-        //Load classificationss from server
+        //Load classifications from server
         $.ajax({
             url: window.productsURL+"classifications/index",
             type: "GET",
@@ -220,6 +222,41 @@ var map, dialog;
             success: function(data){
               for(var i=0;i<data.length;i++){
                 classifications[data[i].id]=data[i].class_name;
+              }         
+            },
+            
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+
+        //Load classifications from server
+        $.ajax({
+            url: window.productsURL+"forest_types/index",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              for(var i=0;i<data.length;i++){
+                forestNames[data[i].forest_id]=data[i].species_name;
+              }         
+            },
+            
+            error: function(error) {
+              console.log(error.responseText)
+          }
+        });
+        //Load classifications from server
+        $.ajax({
+            url: window.productsURL+"vegetations/index",
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            contentType: "application/json",
+            success: function(data){
+              for(var i=0;i<data.length;i++){
+                vegetationNames[data[i].vegetation_id]=data[i].vegetation_name;
               }         
             },
             
@@ -341,17 +378,63 @@ var map, dialog;
           });
 
         }
-
-        function getFieldData(id){
+        var methodID=["Field Verification","Windshield Survey","Inaccessable Polygon","Photo Interpreted/Knowledge of Area"];
+        var confidenceLevel=["Low","Medium","High"]
+        function getFieldData(assignment,mappoint){
           $.ajax({
-            url: window.productsURL+"field_data",
+            url: window.productsURL+"field_datas/getFieldDataDetails",
             type: "POST",
-            data: JSON.stringify({'id': id}),
+            data: JSON.stringify({assignment_id: assignment.id}),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
-            success: function(data){
-                return data;
+            success: function(fielddata){
+              console.log(fielddata)
+                vegetation=fielddata.vegetation
+                species=fielddata.species
+                fielddata=fielddata.field_data
+                var assigneeId=assignment.user_id;
+                var covertype1=fielddata.covertype1_id;
+                var covertype2=fielddata.covertype2_id;
+                var covertype3=fielddata.covertype3_id;
+                content="Completed by: "+usernames[assigneeId]+"<br>";
+                content+="Cover Type: "+classifications[covertype1]
+                if(covertype2){
+                  content+= ", "+classifications[covertype2];
+                }
+                if(covertype3){
+                  content+= ", "+classifications[covertype3];
+                }
+                content+="<br>"
+
+                if (species){
+                  content+= "Species Present:<br>"
+                  for(var i=0;i<species.length;i++){
+                    content+=forestNames[species[i].forest_type_id] + ": " +species[i].percentage+ "% <br>"
+                  }
+                }
+                if(fielddata.canopy_perc){
+                  content+="Total Canopy: "+fielddata.canopy_perc+"% <br>"
+                }
+                if (vegetation){
+                  content+= "Vegetation Present:<br>"
+                  for(var i=0;i<vegetation.length;i++){
+                    content+=vegetationNames[vegetation[i].vegetation_id] +"<br>"
+                  }
+                }
+
+ 
+                if(fielddata.identification_method){
+                  content+="Identification: "+methodID[fielddata.identification_method-1]+"<br>"
+                }
+                if(fielddata.confidence_level){
+                  content+="Confidence: "+confidenceLevel[fielddata.confidence_level-1]+"<br>"
+                }
+
+
+              map.infoWindow.setTitle("Task #"+assignment.location_id);
+              map.infoWindow.setContent(content);
+              map.infoWindow.show(mappoint);
             },         
             error: function(error) {
               console.log(error.responseText)
@@ -359,7 +442,7 @@ var map, dialog;
         });
         }
 
-        function getPopupContent(data){
+        function getPopupContent(data,mappoint){
               var status=0;
               if (data){
                 status=data.Status;
@@ -370,20 +453,9 @@ var map, dialog;
                     var assigneeId=data.UserIdAssigned;
                     content="Assigned to: "+usernames[assignerId]+"<br>Assigned by: "+usernames[assigneeId];
               }else if(status==2){
-                  var assigneeId=data.UserIdAssigned;
-                  // fielddata=getFieldData(data.location_id);
-                  // var covertype1=fielddata.covertype1_id;
-                  // var covertype2=fielddata.covertype2_id;
-                  // var covertype3=fielddata.covertype3_id;
-                  // content="Completed by: "+usernames[assigneeId]+"<br>";
-                  // content+="Cover Type: "+classifications[covertype1]
-                  // if(covertype2){
-                  //   content+= ", "+classifications[covertype2];
-                  // }
-                  // if(covertype3){
-                  //   content+= ", "+classifications[covertype3];
-                  // }
-                  // content+="<br>"
+                  fielddata=getFieldData(data,mappoint)
+
+                
               }else{
                     content="Not yet assigned";
               }
