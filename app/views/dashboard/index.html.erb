@@ -41,5 +41,7 @@
   </div>
   <%= javascript_tag do %>
   window.productsURL = '<%= ENV["ENVURL"] %>';
+  window.current_user = '<%= current_user.id %>';
+
 <% end %>
 </div>

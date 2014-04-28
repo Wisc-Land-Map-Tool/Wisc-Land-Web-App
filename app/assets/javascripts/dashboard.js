@@ -159,7 +159,7 @@ var map, dialog;
           surveySites.queryFeatures(queryTasks, function(results){
           })
 
-        var selectedUser;  //User to display assignments for
+        var selectedUser=1;  //User to display assignments for
         var assignedLong = {};  //Hash of assignments for selected User
         var assignedLat = {};
         var userAssigned = {};
@@ -167,7 +167,7 @@ var map, dialog;
         var forestNames={};
         var vegetationNames={};
 
-        var user=1;           //Logged in user for Assigner ID
+        var user=window.current_user;           //Logged in user for Assigner ID
         var assigned = {};    //All assignments
         var assignedData ={};
         var usernames={};
@@ -389,7 +389,6 @@ var map, dialog;
             contentType: "application/json; charset=utf-8",
             contentType: "application/json",
             success: function(fielddata){
-              console.log(fielddata)
                 vegetation=fielddata.vegetation
                 species=fielddata.species
                 fielddata=fielddata.field_data
@@ -406,7 +405,9 @@ var map, dialog;
                   content+= ", "+classifications[covertype3];
                 }
                 content+="<br>"
-
+                if (fielddata.cover_comment.length>0){
+                  content+=fielddata.cover_comment+"<br>"
+                }
                 if (species){
                   content+= "Species Present:<br>"
                   for(var i=0;i<species.length;i++){
@@ -415,6 +416,9 @@ var map, dialog;
                 }
                 if(fielddata.canopy_perc){
                   content+="Total Canopy: "+fielddata.canopy_perc+"% <br>"
+                }
+                if (fielddata.canopy_comment.length>0){
+                  content+=fielddata.canopy_comment+"<br>"
                 }
                 if (vegetation){
                   content+= "Vegetation Present:<br>"
@@ -429,6 +433,9 @@ var map, dialog;
                 }
                 if(fielddata.confidence_level){
                   content+="Confidence: "+confidenceLevel[fielddata.confidence_level-1]+"<br>"
+                }
+                if (fielddata.general_comment.length>0){
+                  content+=fielddata.general_comment+"<br>"
                 }
 
 
@@ -449,13 +456,11 @@ var map, dialog;
               }
               var content="";
               if(status==1){
-                    var assignerId=data.user_id;
-                    var assigneeId=data.UserIdAssigned;
-                    content="Assigned to: "+usernames[assignerId]+"<br>Assigned by: "+usernames[assigneeId];
+                    var assigneeId=data.user_id;
+                    var assignerId=data.UserIdAssigner;
+                    content="Assigned to: "+usernames[assigneeId]+"<br>Assigned by: "+usernames[assignerId];
               }else if(status==2){
-                  fielddata=getFieldData(data,mappoint)
-
-                
+                  fielddata=getFieldData(data,mappoint)                
               }else{
                     content="Not yet assigned";
               }
