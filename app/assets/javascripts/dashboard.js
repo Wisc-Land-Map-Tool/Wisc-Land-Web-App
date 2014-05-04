@@ -175,6 +175,8 @@ var map, dialog;
         var polygons=[];
         
 
+    //When map is laoded, make ajax calls to load information needed to display site statistics
+
         //Load tasks from server
         $.ajax({
             url: window.productsURL+"assignments",
@@ -265,7 +267,10 @@ var map, dialog;
           }
         });
 
-        //Set up symbols   
+
+
+
+        //Set up symbols for polygon drawing
         var fillSymbol = new PictureFillSymbol("mangrove.png", new SimpleLineSymbol( SimpleLineSymbol.STYLE_SOLID, new Color('#000'), 1), 42, 42);
         if (map.loaded){
            initToolbar();
@@ -323,8 +328,7 @@ var map, dialog;
 
 
 
-        //common functions
-
+        //set up toolbar for drawing and clearing
         function initToolbar() {
           initializeFieldStaff();
 
@@ -354,14 +358,18 @@ var map, dialog;
             tb.activate(tool);
           });
         }
+        //Add a graphic when polygon is done being draw (on double click)
         function addGraphic(evt) {
           //deactivate the toolbar and clear existing graphics 
           tb.deactivate(); 
           map.enableMapNavigation();
 
+
           var query = new esri.tasks.Query();
+          //set query geomoetry equal to polygon geometry
           query.geometry=evt.geometry
-          //query.outFields=["GTPOLYS_"]
+
+          //find survey sites inside polygon and add to tasks list for assignment
           surveySites.queryFeatures(query, function(results){
             for (var i=0;i<results.features.length;i++){
               var geometry=results.features[i].geometry;
@@ -378,6 +386,8 @@ var map, dialog;
           });
 
         }
+
+        //getFieldData and getPopupContent get called when you click on a survey site
         var methodID=["Field Verification","Windshield Survey","Inaccessable Polygon","Photo Interpreted/Knowledge of Area"];
         var confidenceLevel=["Low","Medium","High"]
         function getFieldData(assignment,mappoint){
@@ -528,6 +538,7 @@ var map, dialog;
 
         }
 
+        //draw sites selected as yellow
         function drawPolygons(){
           if (tasks.length<1)return;
           for (var i=0;i<tasks.length;i++){
@@ -536,7 +547,7 @@ var map, dialog;
           }
         }
 
-
+        //assign tasks when user clicks assign
         function assignTasks(){
             //set up ajax call
             $.ajax({
