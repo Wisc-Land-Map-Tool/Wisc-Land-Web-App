@@ -438,7 +438,7 @@
         1,
         null,
         1,
-        0,
+        4,
         null,
         null,
         1,
@@ -477,9 +477,9 @@
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/spec/factories.rb": [
         1,
         1,
-        1,
-        1,
-        1,
+        11,
+        11,
+        11,
         1,
         null,
         null
@@ -576,13 +576,6 @@
         null,
         null,
         null,
-<<<<<<< HEAD
-=======
-        1,
-        1,
-        1,
-        null,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         1,
         1,
         1,
@@ -590,8 +583,13 @@
         1,
         1,
         1,
-<<<<<<< HEAD
-=======
+        null,
+        null,
+        null,
+        1,
+        1,
+        1,
+        1,
         1,
         1,
         null,
@@ -602,21 +600,18 @@
         null,
         null,
         null,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
+        null,
+        null,
+        null,
+        null,
+        1,
+        1,
+        1,
+        1,
         null,
         null,
         null,
         1,
-        1,
-<<<<<<< HEAD
-        1,
-        1,
-        1,
-        1,
-        null,
-        1,
-        1,
-=======
         null,
         null,
         null,
@@ -728,16 +723,26 @@
         null
       ],
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/app/controllers/assignments_controller.rb": [
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         1,
         1,
         null,
+        1,
+        0,
+        0,
         null,
         null,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         null,
+        1,
         null,
-<<<<<<< HEAD
-=======
         null,
         1,
         0,
@@ -747,12 +752,12 @@
       ],
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/app/controllers/application_controller.rb": [
         1,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
+        null,
         null,
         null,
         1,
-<<<<<<< HEAD
-=======
+        null,
+        1,
         null,
         1,
         0,
@@ -777,16 +782,41 @@
         null
       ],
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/spec/controllers/dashboard_controller_spec.rb": [
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
-        1,
-        1,
         1,
         null,
-        null,
+        1,
+        1,
         null,
         1,
         null,
         null,
+        1,
+        null,
+        1,
+        1,
+        1,
+        1,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        null,
+        1,
+        1,
+        1,
+        1,
+        1,
+        null,
+        1,
+        1,
+        null,
+        1,
+        1,
         null,
         null,
         null,
@@ -794,25 +824,25 @@
         null,
         null,
         null,
+        1,
+        null,
+        1,
+        null,
+        1,
+        1,
+        1,
+        1,
+        1,
+        null,
+        1,
+        1,
+        null,
+        1,
+        1,
         null,
         null,
         null,
         null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-<<<<<<< HEAD
-=======
         null
       ],
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/app/controllers/dashboard_controller.rb": [
@@ -834,45 +864,63 @@
         2,
         null,
         null,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         null,
         null,
         null,
         null,
         null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ],
-<<<<<<< HEAD
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/application_helper.rb": [
         1,
+        0,
+        0,
+        0,
+        null,
+        null,
+        1,
+        0,
+        0,
+        null,
+        0,
+        0,
+        null,
+        0,
+        null,
+        null,
+        0,
+        0,
+        null,
+        0,
+        null,
+        null,
+        0,
+        0,
+        null,
+        0,
+        null,
+        null,
+        0,
+        null,
+        0,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        1,
+        0,
+        0,
+        0,
+        0,
+        null,
+        0,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
         null
       ],
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/assignments_helper.rb": [
-=======
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/spec/controllers/field_datas_controller_spec.rb": [
         1,
         null,
@@ -970,32 +1018,30 @@
         1,
         null,
         1,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         1,
+        null,
+        null,
+        null,
+        null,
+        null,
         null
       ],
-<<<<<<< HEAD
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/classification_helper.rb": [
-=======
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/app/controllers/login_controller.rb": [
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         1,
+        1,
+        2,
+        1,
+        null,
+        null,
         null
       ],
-<<<<<<< HEAD
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/dashboard_helper.rb": [
-=======
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/spec/controllers/users_controller_spec.rb": [
         1,
         null,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         1,
+        null,
         null
       ],
-<<<<<<< HEAD
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/devise_helper.rb": [
-        1,
-=======
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/app/controllers/users_controller.rb": [
         1,
         1,
@@ -1116,7 +1162,6 @@
       ],
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/spec/helpers/forest_types_helper_spec.rb": [
         null,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         null,
         null,
         null,
@@ -1132,25 +1177,6 @@
         null,
         null
       ],
-<<<<<<< HEAD
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/field_datas_helper.rb": [
-        1,
-        null
-      ],
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/forest_types_helper.rb": [
-        1,
-        null
-      ],
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/login_helper.rb": [
-        1,
-        null
-      ],
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/users_helper.rb": [
-        1,
-        null
-      ],
-      "/Users/Jared/Programming/Rails_Projects/Wisc-Land-Web-App/app/helpers/vegetations_helper.rb": [
-=======
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/spec/helpers/login_helper_spec.rb": [
         null,
         null,
@@ -1282,15 +1308,10 @@
       "/Users/slagree/Documents/landcover/Wisc-Land-Web-App/app/models/field_data.rb": [
         1,
         1,
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
         1,
         null
       ]
     },
-<<<<<<< HEAD
-    "timestamp": 1399247515
-=======
-    "timestamp": 1399249097
->>>>>>> f2c3f9b0883041a2a2a12a2a9a0a24f49e7ce9ca
+    "timestamp": 1399249485
   }
 }
