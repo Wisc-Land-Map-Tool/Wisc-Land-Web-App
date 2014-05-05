@@ -1,6 +1,13 @@
 class AddIdToForests < ActiveRecord::Migration
+  
   def change
-  	  	add_column :forest_types, :forest_id, :integer
-   	  	add_column :vegetations, :vegetation_id, :integer
+    create_table :forest_types do |t|
+    	t.string   "species_name"
+    	t.datetime "created_at"
+    	t.datetime "updated_at"
+    	t.integer  "forest_id"
+    end
+  
+   	add_column :vegetations, :vegetation_id, :integer
   end
 end
