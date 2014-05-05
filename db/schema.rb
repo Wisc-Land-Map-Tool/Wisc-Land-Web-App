@@ -71,14 +71,6 @@ ActiveRecord::Schema.define(version: 20140428010320) do
     t.datetime "updated_at"
   end
 
-  create_table "points", force: true do |t|
-    t.integer  "location_id"
-    t.decimal  "longitude"
-    t.decimal  "latitude"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "roles", force: true do |t|
     t.string   "name"
     t.integer  "resource_id"
